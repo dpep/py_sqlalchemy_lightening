@@ -97,5 +97,9 @@ class LighteningBase(object):
   def save(self):
     session = self.query.session
     session.add(self)
-    session.commit()
     return self
+
+
+  def delete(self):
+    session = self.query.session
+    session.delete(self)

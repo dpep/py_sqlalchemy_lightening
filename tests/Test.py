@@ -71,23 +71,20 @@ class ArrayTest(unittest.TestCase):
 
     def test_update(self):
         bob = Person(name='bob').save()
-
-        self.assertTrue(
-            Person.where(name='bob').first()
-        )
+        self.assertTrue(Person.where(name='bob').first())
 
         bob.name = 'bobby'
         bob.save
 
-        self.assertFalse(
-            Person.where(name='bob').first()
-        )
-
-        self.assertTrue(
-            Person.where(name='bobby').first()
-        )
+        self.assertFalse(Person.where(name='bob').first())
+        self.assertTrue(Person.where(name='bobby').first())
 
 
+    def test_delete(self):
+        mara = Person(name='mara').save()
+        self.assertTrue(Person.where(name='mara').first())
+        mara.delete()
+        self.assertFalse(Person.where(name='mara').first())
 
 
 if __name__ == '__main__':
