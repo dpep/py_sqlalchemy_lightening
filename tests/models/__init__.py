@@ -14,8 +14,8 @@ class Person(LighteningBase, Base):
     name = Column(String(250), nullable=False)
 
 
-    def __repr__(self):
-      return "%s: %s" % (self.__class__.name, self.name)
+    def __str__(self):
+      return "%s: %s" % (self.__class__.__name__, self.name)
 
 
 
