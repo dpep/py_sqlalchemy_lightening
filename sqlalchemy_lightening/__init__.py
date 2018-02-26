@@ -5,6 +5,7 @@ __version__ = '0.0.1'
 from collections import Iterable
 from classproperties import classproperty
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm.exc import NoResultFound
 from stringcase import snakecase
 
 
@@ -39,27 +40,39 @@ class LighteningBase(object):
 
 
   @classmethod
-  def get(cls, *id_or_ids):
+  def get(cls, *ids):
     """
     Get a record or records based on their ids
       eg.  Person.get(1)
            Person.get(1, 2)
            Person.get([1, 2])
     """
-    assert len(id_or_ids) > 0, 'id or ids needed'
+    assert 1 == len(cls.__table__.primary_key), "compound primary keys not yet supported"
+
+    if len(ids) == 0:
+      raise TypeError("id or ids required")
 
     # eg. get([1, 2, 3])
-    iterable = isinstance(id_or_ids[0], Iterable) and not isinstance(id_or_ids[0], str)
-    if 1 == len(id_or_ids) and iterable:
-      id_or_ids = id_or_ids[0]
+    iterable = isinstance(ids[0], Iterable) and not isinstance(ids[0], str)
+    ids_unpacked = False
+    if 1 == len(ids) and iterable:
+      ids = ids[0]
+      ids_unpacked = True
 
-    res = cls.where(id=id_or_ids)
+    if 1 == len(ids):
+      # use standard SQLAlchemy
+      res = cls.query.get(ids[0])
 
-    if 1 == len(id_or_ids):
-      res = res.one_or_none()
+      if ids_unpacked:
+        # repack ids to match input format
+        res = [ res ]
     else:
-      res = res.all()
-      assert len(id_or_ids) == len(res)
+      res = cls.where(id=ids).all()
+      if len(ids) != len(res):
+        raise ValueError(
+          "expected %d values but only got %d" % (len(ids), len(res))
+        )
+
 
     return res
 
