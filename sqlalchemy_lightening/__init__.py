@@ -4,15 +4,13 @@ __version__ = '0.0.1'
 
 from collections import Iterable
 from classproperties import classproperty
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
+from sqlalchemy.ext.declarative import declared_attr
 from stringcase import snakecase
-from sqlalchemy.orm.query import Query
-from sqlalchemy.orm.session import Session
-from sqlalchemy.orm.attributes import QueryableAttribute
+
 
 
 class LighteningBase(object):
-
+  @declared_attr
   def __tablename__(cls):
     # generate a default table name, based on class name
     return snakecase(cls.__name__)
@@ -27,7 +25,7 @@ class LighteningBase(object):
 
   @classproperty
   def query(cls):
-    return LighteningBase.query_class(cls)
+    return cls.query_class(cls)
 
 
   @classproperty
