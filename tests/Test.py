@@ -76,13 +76,14 @@ class ArrayTest(unittest.TestCase):
             Person.filter_by(id=1).one()
         )
 
-        self.assertIsNone(
-            Person.filter_by(id=123).one_or_none()
+        self.assertEquals(
+            dp,
+            Person.filter_by(name='dpepper').one()
         )
 
         self.assertEquals(
             dp,
-            Person.filter_by(name='dpepper').one()
+            Person.filter_by(id=1, name='dpepper').one()
         )
 
         self.assertEquals(
@@ -95,6 +96,14 @@ class ArrayTest(unittest.TestCase):
             Person.filter_by(name=['dpepper', 'josh']).all()
         )
 
+        self.assertIsNone(
+            Person.filter_by(id=123).one_or_none()
+        )
+
+        self.assertIsNone(
+            Person.filter_by(id=2, name='dpepper').one_or_none()
+        )
+
 
     def test_where(self):
         self.assertIsInstance(Person.where(), Query)
@@ -105,22 +114,22 @@ class ArrayTest(unittest.TestCase):
         )
 
         self.assertEquals(
-            [ dp ],
-            list(Person.where(Person.id == 1))
+            dp,
+            Person.where(Person.id == 1).one()
         )
 
         self.assertEquals(
             [ dp, jp ],
-            list(Person.where(Person.id.in_([1, 2])))
+            Person.where(Person.id.in_([1, 2])).all()
         )
 
         self.assertEquals(
-            [ dp ],
-            Person.where(Person.id == 1, id=1).all()
+            dp,
+            Person.where(Person.id == 1, id=1).one()
         )
 
-        self.assertFalse(
-            Person.where(Person.id == 1, id=2).all()
+        self.assertIsNone(
+            Person.where(Person.id == 1, id=2).one_or_none()
         )
 
 
