@@ -1,2 +1,11 @@
+v0.1.0, 2018-02-26
+    c7a5014 better debugging
+    f976d81 better debugging
+    38f6c57 more testing
+    ba558e3 more testing
+    0c241bf better testing, fix get([1])
+    a7539f4 cleanup, make declared_attr
+    bbb1890 add dependencies
+    edcee75 add delete()
 v0.0.1, 2018-02-21
     
