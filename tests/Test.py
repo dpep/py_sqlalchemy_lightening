@@ -18,6 +18,11 @@ jp = Person(name='josh').save()
 class ArrayTest(unittest.TestCase):
     def test_properties(self):
         self.assertEquals(
+            'person',
+            Person.__tablename__
+        )
+
+        self.assertEquals(
             dp,
             Person.first
         )
