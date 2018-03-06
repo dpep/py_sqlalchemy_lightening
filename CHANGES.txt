@@ -1,3 +1,6 @@
+v0.1.1, 2018-03-06
+    07213f6 add limit(), make query_class and query overrides more flexible so they play nice with sqlalchemy, expand tests but comment out save/update for now since theres something weird going on
+    5145bd4 update readme
 v0.1.0, 2018-02-26
     c7a5014 better debugging
     f976d81 better debugging
