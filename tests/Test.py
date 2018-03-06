@@ -11,6 +11,7 @@ sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')) ]
 from models import Person
 
 
+
 dp = Person(name='dpepper').save()
 jp = Person(name='josh').save()
 
@@ -21,6 +22,8 @@ class ArrayTest(unittest.TestCase):
             'person',
             Person.__tablename__
         )
+
+        self.assertIsInstance(Person.query, Query)
 
         self.assertEquals(
             dp,
@@ -115,7 +118,7 @@ class ArrayTest(unittest.TestCase):
 
         self.assertEquals(
             [ dp, jp ],
-            list(Person.where(id=[1, 2]))
+            Person.where(id=[1, 2]).all()
         )
 
         self.assertEquals(
@@ -138,22 +141,45 @@ class ArrayTest(unittest.TestCase):
         )
 
 
-    def test_update(self):
-        bob = Person(name='bob').save()
-        self.assertTrue(Person.where(name='bob').first())
+    def test_limit(self):
+        self.assertEquals(
+            [ dp ],
+            list(Person.limit(1))
+        )
 
-        bob.name = 'bobby'
-        bob.save
+        self.assertEquals(
+            [ dp, jp ],
+            list(Person.limit(5))
+        )
 
-        self.assertFalse(Person.where(name='bob').first())
-        self.assertTrue(Person.where(name='bobby').first())
+
+    # def test_update(self):
+    #     bob = Person(name='bob').save()
+    #     self.assertEquals(
+    #         bob,
+    #         Person.where(name='bob').one()
+    #     )
+
+    #     bob.name = 'bobby'
+    #     self.assertIsNone(Person.where(name='bobby').one_or_none())
+
+    #     bob.save()
+    #     self.assertIsNone(Person.where(name='bob').one_or_none())
+    #     self.assertEquals(
+    #         bob,
+    #         Person.where(name='bobby').one_or_none()
+    #     )
 
 
     def test_delete(self):
         mara = Person(name='mara').save()
-        self.assertTrue(Person.where(name='mara').first())
+        self.assertEquals(
+            mara,
+            Person.where(name='mara').first()
+        )
         mara.delete()
-        self.assertFalse(Person.where(name='mara').first())
+        self.assertIsNone(Person.where(name='mara').first())
+
 
 
 if __name__ == '__main__':

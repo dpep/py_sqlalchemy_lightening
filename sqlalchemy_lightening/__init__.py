@@ -19,13 +19,20 @@ class LighteningBase(object):
 
   @classproperty
   def query_class(cls):
-    raise NotImplementedError(
-      "override during setup: %s.query_class = session.query" % cls.__name__
-    )
+    '''Override, eg. LighteningBase.query_class = db.session.query'''
+    pass
 
 
   @classproperty
   def query(cls):
+    if not cls.query_class:
+      raise NotImplementedError(
+        "%s.query or %s.query_class must be set during setup" % (
+          cls.__name__,
+          cls.__name__,
+        )
+      )
+
     return cls.query_class(cls)
 
 
@@ -37,6 +44,11 @@ class LighteningBase(object):
   @classproperty
   def first(cls):
     return cls.query.first()
+
+
+  @classmethod
+  def limit(cls, limit):
+    return cls.query.limit(limit)
 
 
   @classmethod
@@ -112,5 +124,4 @@ class LighteningBase(object):
 
 
   def delete(self):
-    session = self.query.session
-    session.delete(self)
+    self.query.session.delete(self)
