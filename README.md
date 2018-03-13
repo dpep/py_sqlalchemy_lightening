@@ -20,7 +20,7 @@ Person.get([1, 2, 3])
 # basic filter
 Person.where(name='dpepper')
 
-# where name in ...
+# where `name` in ...
 Person.where(name=['dpepper', 'thatguy'])
 
 # mix and match
