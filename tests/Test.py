@@ -153,24 +153,6 @@ class ArrayTest(unittest.TestCase):
         )
 
 
-    # def test_update(self):
-    #     bob = Person(name='bob').save()
-    #     self.assertEquals(
-    #         bob,
-    #         Person.where(name='bob').one()
-    #     )
-
-    #     bob.name = 'bobby'
-    #     self.assertIsNone(Person.where(name='bobby').one_or_none())
-
-    #     bob.save()
-    #     self.assertIsNone(Person.where(name='bob').one_or_none())
-    #     self.assertEquals(
-    #         bob,
-    #         Person.where(name='bobby').one_or_none()
-    #     )
-
-
     def test_delete(self):
         mara = Person(name='mara').save()
         self.assertEquals(
