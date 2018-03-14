@@ -90,7 +90,7 @@ class LighteningBase(object):
 
 
   @classmethod
-  def filter_by(cls, **kwargs):
+  def where(cls, *args, **kwargs):
     query = cls.query
 
     for field, value in kwargs.items():
@@ -100,16 +100,6 @@ class LighteningBase(object):
           query = query.filter(column.in_(value))
         else:
           query = query.filter(column == value)
-
-    return query
-
-
-  @classmethod
-  def where(cls, *args, **kwargs):
-    if len(kwargs) > 0:
-      query = cls.filter_by(**kwargs)
-    else:
-      query = cls.query
 
     if len(args) > 0:
       query = query.filter(*args)
