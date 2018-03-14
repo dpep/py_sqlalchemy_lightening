@@ -13,7 +13,7 @@ from stringcase import snakecase
 class LighteningBase(object):
   @declared_attr
   def __tablename__(cls):
-    # generate a default table name, based on class name
+    '''generate a default table name, based on class name'''
     return snakecase(cls.__name__)
 
 
@@ -25,6 +25,7 @@ class LighteningBase(object):
 
   @classproperty
   def query(cls):
+    '''query class specific table'''
     if not cls.query_class:
       raise NotImplementedError(
         "%s.query or %s.query_class must be set during setup" % (
@@ -38,16 +39,19 @@ class LighteningBase(object):
 
   @classproperty
   def all(cls):
+    '''retrieve all records'''
     return cls.query.all()
 
 
   @classproperty
   def first(cls):
+    '''retrieve the first record'''
     return cls.query.first()
 
 
   @classmethod
   def limit(cls, limit):
+    '''retrieve a specified number of records'''
     return cls.query.limit(limit)
 
 
@@ -85,12 +89,17 @@ class LighteningBase(object):
           "expected %d values but only got %d" % (len(ids), len(res))
         )
 
-
     return res
 
 
   @classmethod
   def where(cls, *args, **kwargs):
+    '''
+    Query table, eg.
+      Person.where(Person.name == 'dpepper')
+      Person.where(name='dpepper')
+      Person.where(name=['dpepper', 'josh'])
+    '''
     query = cls.query
 
     for field, value in kwargs.items():
