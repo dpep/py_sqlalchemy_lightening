@@ -70,7 +70,7 @@ class LighteningBase(object):
 
     # eg. get([1, 2, 3])
     ids_unpacked = False
-    if 1 == len(ids) and isinstance(ids[0], (list, tuple)):
+    if 1 == len(ids) and isinstance(ids[0], (list, tuple, set)):
       ids = ids[0]
       ids_unpacked = True
 
@@ -104,7 +104,7 @@ class LighteningBase(object):
     for field, value in kwargs.items():
         column = getattr(cls, field)
 
-        if isinstance(value, Iterable) and not isinstance(value, str):
+        if isinstance(value, (list, tuple, set)):
           query = query.filter(column.in_(value))
         else:
           query = query.filter(column == value)

@@ -113,6 +113,11 @@ class ArrayTest(unittest.TestCase):
 
         self.assertEquals(
             dp,
+            Person.where(name=u'dpepper').one()
+        )
+
+        self.assertEquals(
+            dp,
             Person.where(id=1, name='dpepper').one()
         )
 
