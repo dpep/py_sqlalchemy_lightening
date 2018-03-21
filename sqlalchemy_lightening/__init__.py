@@ -69,9 +69,8 @@ class LighteningBase(object):
       raise TypeError("id or ids required")
 
     # eg. get([1, 2, 3])
-    iterable = isinstance(ids[0], Iterable) and not isinstance(ids[0], str)
     ids_unpacked = False
-    if 1 == len(ids) and iterable:
+    if 1 == len(ids) and isinstance(ids[0], (list, tuple)):
       ids = ids[0]
       ids_unpacked = True
 
