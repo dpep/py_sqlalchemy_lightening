@@ -1,7 +1,12 @@
+import os
+import sys
+
 from sqlalchemy import create_engine
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')) ] + sys.path
 
 from sqlalchemy_lightening import LighteningBase
 
