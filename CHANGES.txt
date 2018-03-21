@@ -1,3 +1,5 @@
+v0.2.2, 2018-03-21
+    7979254 more unicode bugs...make get and where handle them the same.  expand test coverage for this
 v0.2.1, 2018-03-21
     17a52e1 unicode is also iterable.  fix by forcing user to pass list or tuple, not any iterable
     56ecd3a fix path issue
