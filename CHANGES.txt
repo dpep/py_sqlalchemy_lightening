@@ -1,3 +1,6 @@
+v0.2.1, 2018-03-21
+    17a52e1 unicode is also iterable.  fix by forcing user to pass list or tuple, not any iterable
+    56ecd3a fix path issue
 v0.2.0, 2018-03-13
     0675964 comments
     fe48993 collapse filter() into where()...no need for both
