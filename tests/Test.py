@@ -167,6 +167,10 @@ class ArrayTest(unittest.TestCase):
         )
 
 
+    def test_count(self):
+        self.assertEquals(2, Person.count)
+
+
     def test_delete(self):
         mara = Person(name='mara').save()
         self.assertEquals(

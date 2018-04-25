@@ -55,6 +55,12 @@ class LighteningBase(object):
     return cls.query.limit(limit)
 
 
+  @classproperty
+  def count(cls):
+    '''retrieve the total number of records'''
+    return cls.query.count()
+
+
   @classmethod
   def get(cls, *ids):
     """
@@ -116,8 +122,7 @@ class LighteningBase(object):
 
 
   def save(self):
-    session = self.query.session
-    session.add(self)
+    self.query.session.add(self)
     return self
 
 
