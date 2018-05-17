@@ -16,7 +16,7 @@ dp = Person(name='dpepper').save()
 jp = Person(name='josh').save()
 
 
-class ArrayTest(unittest.TestCase):
+class BasicTest(unittest.TestCase):
     def test_properties(self):
         self.assertEquals(
             'person',
