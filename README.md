@@ -36,8 +36,11 @@ Person.query
 
 ##  Example Setup
 ```
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy_lightening import LighteningBase
+
 
 # create base sqlalchemy model
 Base = declarative_base()
