@@ -18,51 +18,51 @@ jp = Person(name='josh').save()
 
 class BasicTest(unittest.TestCase):
     def test_properties(self):
-        self.assertEquals(
+        self.assertEqual(
             'person',
             Person.__tablename__
         )
 
         self.assertIsInstance(Person.query, Query)
 
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.first
         )
 
-        self.assertEquals(
+        self.assertEqual(
             [ dp, jp ],
             Person.all
         )
 
 
     def test_get(self):
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.get(1)
         )
 
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.get('1')
         )
 
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.get(u'1')
         )
 
-        self.assertEquals(
+        self.assertEqual(
             [ dp, jp ],
             Person.get(1, 2)
         )
 
-        self.assertEquals(
+        self.assertEqual(
             [ dp ],
             Person.get([ 1 ])
         )
 
-        self.assertEquals(
+        self.assertEqual(
             [ dp, jp ],
             Person.get([ 1, 2 ])
         )
@@ -85,43 +85,43 @@ class BasicTest(unittest.TestCase):
         self.assertIsInstance(Person.where(), Query)
 
         # args
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.where(Person.id == 1).one()
         )
 
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.where(Person.name == 'dpepper').one()
         )
 
-        self.assertEquals(
+        self.assertEqual(
             [ dp, jp ],
             Person.where(Person.id.in_([1, 2])).all()
         )
 
         # kwargs
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.where(id=1).one()
         )
 
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.where(name='dpepper').one()
         )
 
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.where(name=u'dpepper').one()
         )
 
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.where(id=1, name='dpepper').one()
         )
 
-        self.assertEquals(
+        self.assertEqual(
             [ dp, jp ],
             Person.where(name=['dpepper', 'josh']).all()
         )
@@ -134,13 +134,13 @@ class BasicTest(unittest.TestCase):
             Person.where(id=2, name='dpepper').one_or_none()
         )
 
-        self.assertEquals(
+        self.assertEqual(
             [ dp, jp ],
             Person.where(id=[1, 2]).all()
         )
 
         # args and kwargs
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.where(Person.id == 1, id=1).one()
         )
@@ -149,31 +149,31 @@ class BasicTest(unittest.TestCase):
             Person.where(Person.id == 1, id=2).one_or_none()
         )
 
-        self.assertEquals(
+        self.assertEqual(
             dp,
             Person.where(Person.name == 'dpepper', id=[1, 2]).one()
         )
 
 
     def test_limit(self):
-        self.assertEquals(
+        self.assertEqual(
             [ dp ],
             list(Person.limit(1))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             [ dp, jp ],
             list(Person.limit(5))
         )
 
 
     def test_count(self):
-        self.assertEquals(2, Person.count)
+        self.assertEqual(2, Person.count)
 
 
     def test_delete(self):
         mara = Person(name='mara').save()
-        self.assertEquals(
+        self.assertEqual(
             mara,
             Person.where(name='mara').first()
         )
