@@ -29,14 +29,7 @@ __author__ = 'dpepper'
 __version__ = '0.2.2'
 
 import setuptools
-import unittest
 
-
-def discover_tests():
-    return unittest.TestLoader().discover(
-        'tests',
-        pattern='*Test.py',
-    )
 
 
 if __name__ == "__main__":
@@ -54,7 +47,7 @@ if __name__ == "__main__":
         packages=[
             "sqlalchemy_lightening",
         ],
-        test_suite = 'setup.discover_tests',
+        test_suite = 'tests',
 
         install_requires=[
             "classproperties",

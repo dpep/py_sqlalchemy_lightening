@@ -6,12 +6,12 @@ import unittest
 
 from sqlalchemy.orm.query import Query
 
-sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) ] + sys.path
+sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '.')) ] + sys.path
 
 from models import Person
 
 
-
+Person.query.delete()
 dp = Person(name='dpepper').save()
 jp = Person(name='josh').save()
 
