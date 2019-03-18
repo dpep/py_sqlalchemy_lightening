@@ -8,6 +8,8 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.exc import NoResultFound
 from stringcase import snakecase
 
+from .query import patch_query; patch_query()
+from .result_list import ResultList
 
 
 class LighteningBase(object):
@@ -86,7 +88,7 @@ class LighteningBase(object):
 
       if ids_unpacked:
         # repack ids to match input format
-        res = [ res ]
+        res = ResultList([ res ])
     else:
       res = cls.where(id=ids).all()
       if len(ids) != len(res):
