@@ -51,6 +51,8 @@ if __name__ == "__main__":
 
         install_requires=[
             "classproperties",
+            "pluckit",
+            "rekey",
             "sqlalchemy",
             "stringcase",
         ],
