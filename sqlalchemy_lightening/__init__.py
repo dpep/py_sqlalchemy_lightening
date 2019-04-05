@@ -73,6 +73,7 @@ class LighteningBase(object):
            Person.get([1, 2])
     """
     assert 1 == len(cls.__table__.primary_key), "compound primary keys not yet supported"
+    id_column = list(cls.__table__.primary_key)[0].name
 
     if len(ids) == 0:
       raise TypeError("id or ids required")
@@ -91,7 +92,7 @@ class LighteningBase(object):
         # repack ids to match input format
         res = ResultList([ res ])
     else:
-      res = cls.where(id=ids).all()
+      res = cls.where(**{ id_column : ids }).all()
       if len(ids) != len(res):
         raise ValueError(
           "expected %d values but only got %d" % (len(ids), len(res))
