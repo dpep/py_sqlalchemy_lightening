@@ -8,7 +8,8 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.exc import NoResultFound
 from stringcase import snakecase
 
-from .query import patch_query; patch_query()
+import sqlalchemy_lightening.query
+
 from .result_list import ResultList
 
 
