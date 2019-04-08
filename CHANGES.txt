@@ -1,3 +1,13 @@
+v0.3.0, 2019-04-08
+    80e4910 add better relationship support
+    87e9927 custom primary key support
+    4b44ead simplify query patching
+    295e989 tox support for 2 and 3 testing
+    823a29f add dependencies
+    5e1329c patch query for greatness
+    cb74871 2to3
+    a62f3a6 Update README.md
+    4a15c95 add count() method and add test, clean up delete
 v0.2.2, 2018-03-21
     7979254 more unicode bugs...make get and where handle them the same.  expand test coverage for this
 v0.2.1, 2018-03-21
@@ -20,4 +30,4 @@ v0.1.0, 2018-02-26
     bbb1890 add dependencies
     edcee75 add delete()
 v0.0.1, 2018-02-21
-    
+
