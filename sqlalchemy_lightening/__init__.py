@@ -2,6 +2,12 @@ __author__ = 'dpepper'
 __version__ = '0.2.2'
 
 
+__all__ = [
+  'LighteningBase',
+  'relationship',
+]
+
+
 from collections import Iterable
 from classproperties import classproperty
 from sqlalchemy.ext.declarative import declared_attr
@@ -11,6 +17,7 @@ from stringcase import snakecase
 import sqlalchemy_lightening.query
 
 from .result_list import ResultList
+from .relationship import relationship
 
 
 class LighteningBase(object):

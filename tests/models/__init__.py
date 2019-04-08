@@ -8,8 +8,13 @@ from sqlalchemy.orm import sessionmaker
 
 sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')) ] + sys.path
 
-from sqlalchemy_lightening import LighteningBase
+from sqlalchemy_lightening import LighteningBase, relationship
 
+
+__all__ = [
+    'Person',
+    'Pet',
+]
 
 @as_declarative()
 class BaseModel(LighteningBase):
@@ -22,6 +27,12 @@ class BaseModel(LighteningBase):
 
 class Person(BaseModel):
     name = Column(String(250), nullable=False)
+    pets = relationship('Pet')
+
+
+class Pet(BaseModel):
+    name = Column(String(250), nullable=False)
+    person_id = Column(Integer, index=True)
 
 
 
