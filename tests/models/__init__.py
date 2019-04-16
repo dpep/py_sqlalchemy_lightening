@@ -12,6 +12,7 @@ from sqlalchemy_lightening import LighteningBase, relationship
 
 
 __all__ = [
+    'Food',
     'Person',
     'Pet',
 ]
@@ -26,13 +27,20 @@ class BaseModel(LighteningBase):
 
 
 class Person(BaseModel):
-    name = Column(String(250), nullable=False)
+    name = Column(String, nullable=False)
     pets = relationship('Pet')
 
 
 class Pet(BaseModel):
-    name = Column(String(250), nullable=False)
+    name = Column(String, nullable=False)
     person_id = Column(Integer, index=True)
+
+    food_id = Column(Integer)
+    food = relationship('Food')
+
+
+class Food(BaseModel):
+    name = Column(String, unique=True)
 
 
 
