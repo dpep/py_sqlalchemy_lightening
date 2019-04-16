@@ -1,3 +1,5 @@
+v0.3.1, 2019-04-15
+    22f8a46 add many-to-one relationships
 v0.3.0, 2019-04-08
     80e4910 add better relationship support
     87e9927 custom primary key support
