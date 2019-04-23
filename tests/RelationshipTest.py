@@ -20,7 +20,8 @@ dp.pets.append(brownie)
 jp = Person(name='josh').save()
 
 carrots = Food(name='carrots').save()
-brownie.food = carrots
+grass = Food(name='grass').save()
+brownie.food = grass
 
 
 
@@ -49,16 +50,28 @@ class BasicTest(unittest.TestCase):
 
 
     def test_many_to_one(self):
-        # TODO: fix with better test isolation with seeding
-        # self.assertEqual(
-        #     carrots.id,
-        #     brownie.food_id
-        # )
+        self.assertEqual(
+            grass,
+            brownie.food
+        )
+
+        # test update
+        brownie.food = carrots
+
+        # implicitly updated by event handler
+        self.assertEqual(
+            carrots.id,
+            brownie.food_id
+        )
 
         self.assertEqual(
             carrots,
             brownie.food
         )
+
+        # test delete
+        brownie.food = None
+        self.assertIsNone(brownie.food_id)
 
 
 

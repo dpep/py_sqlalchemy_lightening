@@ -1,5 +1,6 @@
+from sqlalchemy import event
 from sqlalchemy.exc import NoForeignKeysError
-from sqlalchemy.orm import RelationshipProperty, foreign
+from sqlalchemy.orm import foreign, Mapper, RelationshipProperty
 
 from .result_list import ResultList
 
@@ -29,6 +30,7 @@ class RelationshipWrapper(RelationshipProperty):
 
                     self.primaryjoin = id_col == foreign(foreign_col)
                     self.uselist = False
+                    self.viewonly = True  # custom update logic below
 
                     self.logger.info(
                         'implicit primaryjoin for relationship: %s.%s: %s' % (
@@ -39,7 +41,17 @@ class RelationshipWrapper(RelationshipProperty):
                     )
 
                     # retry mapping the relationship
-                    return super(RelationshipWrapper, self).do_init()
+                    rel = super(RelationshipWrapper, self).do_init()
+
+                    # set foreign key (XXX_id) during relationship update
+                    @event.listens_for(getattr(class_, self.key), "set")
+                    def on_set(target, value, oldvalue, initiator):
+                        if value:
+                            setattr(target, foreign_key, value.id)
+                        else:
+                            setattr(target, foreign_key, None)
+
+                    return rel
 
 
                 # check for one-to-many relationship
