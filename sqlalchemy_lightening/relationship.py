@@ -1,8 +1,13 @@
+import logging
+
 from sqlalchemy import event
 from sqlalchemy.exc import NoForeignKeysError
 from sqlalchemy.orm import foreign, Mapper, RelationshipProperty
 
 from .result_list import ResultList
+
+
+logger = logging.getLogger(__name__)
 
 
 class RelationshipWrapper(RelationshipProperty):
@@ -32,7 +37,7 @@ class RelationshipWrapper(RelationshipProperty):
                     self.uselist = False
                     self.viewonly = True  # custom update logic below
 
-                    self.logger.info(
+                    logger.info(
                         'implicit primaryjoin for relationship: %s.%s: %s' % (
                             class_.__name__,
                             self.key,
@@ -66,7 +71,7 @@ class RelationshipWrapper(RelationshipProperty):
 
                     self.primaryjoin = id_col == foreign(foreign_col)
 
-                    self.logger.info(
+                    logger.info(
                         'implicit primaryjoin for relationship: %s.%s: %s' % (
                             class_.__name__,
                             self.key,
