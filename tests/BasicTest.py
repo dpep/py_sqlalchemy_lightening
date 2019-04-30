@@ -67,18 +67,29 @@ class BasicTest(unittest.TestCase):
             Person.get([ 1, 2 ])
         )
 
-        with self.assertRaises(TypeError):
+
+    def test_get_typecast(self):
+        self.assertEqual(dp, Person.get(1))
+        self.assertEqual(dp, Person.get('1'))
+        self.assertEqual([ dp, jp ], Person.get('1', '2'))
+
+
+    def test_get_errors(self):
+        with self.assertRaises(ValueError):
             # missing param
             Person.get()
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(TypeError):
+            # invalid param
+            Person.get(None)
+
+        with self.assertRaises(TypeError):
             # invalid key type
             Person.get([ 1, [ 2 ] ])
 
         with self.assertRaises(ValueError):
             # missing Person 3
             Person.get(1, 2, 3)
-
 
 
     def test_where(self):

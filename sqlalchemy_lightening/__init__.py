@@ -80,16 +80,22 @@ class LighteningBase(object):
            Person.get([1, 2])
     """
     assert 1 == len(cls.__table__.primary_key), "compound primary keys not yet supported"
-    id_column = list(cls.__table__.primary_key)[0].name
+    id_column = list(cls.__table__.primary_key)[0]
 
     if len(ids) == 0:
-      raise TypeError("id or ids required")
+      raise ValueError("id or ids required")
+
+    if None in ids:
+      raise TypeError("None is an invalid id")
 
     # eg. get([1, 2, 3])
     ids_unpacked = False
     if 1 == len(ids) and isinstance(ids[0], (list, tuple, set)):
       ids = ids[0]
       ids_unpacked = True
+
+    # type cast
+    ids = list(map(id_column.type.python_type, ids))
 
     if 1 == len(ids):
       # use standard SQLAlchemy
@@ -99,7 +105,7 @@ class LighteningBase(object):
         # repack ids to match input format
         res = ResultList([ res ])
     else:
-      res = cls.where(**{ id_column : ids }).all()
+      res = cls.where(**{ id_column.name : ids }).all()
       if len(ids) != len(res):
         raise ValueError(
           "expected %d values but only got %d" % (len(ids), len(res))
