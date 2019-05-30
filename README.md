@@ -65,4 +65,4 @@ Person.winning
 
 
 ----
-[![installs](https://img.shields.io/pypi/dm/sqlalchemy_lightening.svg)](https://pypi.org/project/sqlalchemy_lightening)
+[![installs](https://img.shields.io/pypi/dm/sqlalchemy_lightening.svg?label=installs)](https://pypi.org/project/sqlalchemy_lightening)
