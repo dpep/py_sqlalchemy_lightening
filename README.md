@@ -62,3 +62,7 @@ LighteningBase.query_class = session.query
 # good to go
 Person.winning
 ```
+
+
+----
+[![installs](https://img.shields.io/pypi/dm/sqlalchemy_lightening.svg)](https://pypi.org/project/sqlalchemy_lightening)
