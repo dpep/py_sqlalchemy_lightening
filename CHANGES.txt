@@ -1,3 +1,10 @@
+v0.3.2, 2019-05-31
+    0011789 enable append shorthand for result lists
+    6d5fcbc id typecasting for convenience, more validation, update tests
+    6c65a1e better logging name
+    de9aeb0 Update README.md
+    b869da7 Update README.md
+    9e18399 improve many-to-one update mechanism
 v0.3.1, 2019-04-15
     22f8a46 add many-to-one relationships
 v0.3.0, 2019-04-08
