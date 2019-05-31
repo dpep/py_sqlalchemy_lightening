@@ -32,6 +32,14 @@ class BasicTest(unittest.TestCase):
         self.assertTrue(hasattr(dp.pets, 'pluck'))
 
 
+    def test_shift_upgrade(self):
+        # lshift is aliased to append
+        pet = Pet(name='sammy')
+        dp.pets << pet
+
+        self.assertIn(pet, dp.pets)
+
+
     def test_one_to_many(self):
         self.assertEqual(
             [ dp.id ],
