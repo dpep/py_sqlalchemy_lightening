@@ -38,6 +38,9 @@ class Pet(BaseModel):
     food_id = Column(Integer)
     food = relationship('Food')
 
+    treat_id = Column(Integer)
+    treat = relationship('Food')
+
 
 class Food(BaseModel):
     name = Column(String, unique=True)

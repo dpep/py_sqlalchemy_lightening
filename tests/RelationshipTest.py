@@ -21,6 +21,7 @@ jp = Person(name='josh').save()
 
 carrots = Food(name='carrots').save()
 grass = Food(name='grass').save()
+apple = Food(name='apple').save()
 brownie.food = grass
 
 
@@ -80,6 +81,30 @@ class BasicTest(unittest.TestCase):
         # test delete
         brownie.food = None
         self.assertIsNone(brownie.food_id)
+
+
+    def test_secondary_many_to_one(self):
+        '''key name may differ from foreign table name'''
+        self.assertIsNone(brownie.treat_id)
+        self.assertIsNone(brownie.treat)
+        self.assertIsNone(brownie.food)
+
+        brownie.treat = apple
+
+        self.assertEqual(
+            apple.id,
+            brownie.treat_id
+        )
+
+        self.assertEqual(
+            apple,
+            brownie.treat
+        )
+        self.assertIsNone(brownie.food)
+
+        # test delete
+        brownie.treat = None
+        self.assertIsNone(brownie.treat)
 
 
 

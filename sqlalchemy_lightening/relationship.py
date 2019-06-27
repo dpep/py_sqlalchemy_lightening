@@ -28,7 +28,7 @@ class RelationshipWrapper(RelationshipProperty):
 
 
                 # check for many-to-one relationship
-                foreign_key = foreign_class.__table__.name + '_id'
+                foreign_key = self.key + '_id'
                 if hasattr(class_, foreign_key):
                     id_col = getattr(class_, foreign_key)
                     foreign_col = getattr(foreign_class, 'id')
@@ -38,7 +38,7 @@ class RelationshipWrapper(RelationshipProperty):
                     self.viewonly = True  # custom update logic below
 
                     logger.info(
-                        'implicit primaryjoin for relationship: %s.%s: %s' % (
+                        'implicit many-to-one relationship: %s.%s: %s' % (
                             class_.__name__,
                             self.key,
                             self.primaryjoin,
@@ -72,7 +72,7 @@ class RelationshipWrapper(RelationshipProperty):
                     self.primaryjoin = id_col == foreign(foreign_col)
 
                     logger.info(
-                        'implicit primaryjoin for relationship: %s.%s: %s' % (
+                        'implicit one-to-many relationship: %s.%s: %s' % (
                             class_.__name__,
                             self.key,
                             self.primaryjoin,
