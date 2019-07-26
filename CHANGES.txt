@@ -1,3 +1,6 @@
+v0.3.3, 2019-07-26
+    f393eeb add columns accessor
+    2914a0a relationship should use key name not foreign table name
 v0.3.2, 2019-05-31
     0011789 enable append shorthand for result lists
     6d5fcbc id typecasting for convenience, more validation, update tests
