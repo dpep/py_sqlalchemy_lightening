@@ -48,6 +48,12 @@ class LighteningBase(object):
 
 
   @classproperty
+  def columns(cls):
+    '''list columns'''
+    return ResultList(cls.__table__.columns)
+
+
+  @classproperty
   def all(cls):
     '''retrieve all records'''
     return cls.query.all()
