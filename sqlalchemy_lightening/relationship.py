@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy import event
 from sqlalchemy.exc import NoForeignKeysError
-from sqlalchemy.orm import foreign, Mapper, RelationshipProperty
+from sqlalchemy.orm import foreign, RelationshipProperty
 
 from .result_list import ResultList
 
