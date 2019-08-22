@@ -1,16 +1,15 @@
-# import logging; logging.basicConfig(); logging.getLogger('sqlalchemy_lightening').setLevel(logging.DEBUG)
 import os
 import sys
 import unittest
 
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer
 from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy.orm import sessionmaker
 
 sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')) ] + sys.path
 
-from sqlalchemy_lightening import LighteningBase, relationship
+from sqlalchemy_lightening import LighteningBase
 
 
 __all__ = [
@@ -25,8 +24,10 @@ class BaseModel(LighteningBase):
     id = Column(Integer, primary_key=True)
 
 
-    def __repr__(self):
-      return "%s(%s): %s" % (self.__class__.__name__, self.id, self.name)
+    # def __str__(self):
+    #     if hasattr(self, 'name'):
+    #         return "%s(%s): %s" % (self.__class__.__name__, self.id, self.name)
+    #     return super().__str__()
 
 
 class TestBase(unittest.TestCase):
