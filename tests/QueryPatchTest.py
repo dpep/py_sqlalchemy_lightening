@@ -4,98 +4,106 @@ import os
 import sys
 import unittest
 
-from sqlalchemy.orm.query import Query
+from sqlalchemy import Column, String
 
-sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '.')) ] + sys.path
+sys.path = [ os.path.abspath(os.path.dirname(__file__)) ] + sys.path
 
-from models import Person
+from models import BaseModel
 
 
-Person.query.delete()
-dp = Person(name='dpepper').save()
-jp = Person(name='josh').save()
+class Student(BaseModel):
+    name = Column(String)
 
 
 class QueryPatchTest(unittest.TestCase):
+    def setUp(self):
+        Student.__table__.create()
+        Student(name='dpepper').save()
+        Student(name='josh').save()
+
+
+    def tearDown(self):
+        Student.__table__.drop()
+
 
     def test_pluck(self):
         self.assertEqual(
             ['dpepper', 'josh'],
-            Person.query.all().pluck('name')
+            Student.query.all().pluck('name')
         )
 
         self.assertEqual(
             ['dpepper', 'josh'],
-            Person.query.pluck('name')
+            Student.query.pluck('name')
         )
 
         self.assertEqual(
             ['dpepper'],
-            Person.query.limit(1).pluck('name')
+            Student.query.limit(1).pluck('name')
         )
 
         self.assertEqual(
             ['dpepper'],
-            Person.query.filter(Person.name == 'dpepper').pluck('name')
+            Student.query.filter(Student.name == 'dpepper').pluck('name')
         )
 
 
     def test_pluck_lightening(self):
         self.assertEqual(
             ['dpepper', 'josh'],
-            Person.all.pluck('name')
+            Student.all.pluck('name')
         )
 
         self.assertEqual(
             ['dpepper'],
-            Person.limit(1).pluck('name')
+            Student.limit(1).pluck('name')
         )
 
         self.assertEqual(
             ['dpepper'],
-            Person.where(name='dpepper').pluck('name')
+            Student.where(name='dpepper').pluck('name')
         )
 
         with self.assertRaises(AttributeError):
-            Person.get(1).pluck('name')
+            Student.get(1).pluck('name')
 
         self.assertEqual(
             ['dpepper'],
-            Person.get([ 1 ]).pluck('name')
+            Student.get([ 1 ]).pluck('name')
         )
 
         self.assertEqual(
             ['dpepper', 'josh'],
-            Person.get(1, 2).pluck('name')
+            Student.get(1, 2).pluck('name')
         )
 
 
     def test_rekey(self):
         self.assertEqual(
             { 1 : 'dpepper', 2 : 'josh' },
-            Person.query.all().rekey('id', 'name')
+            Student.query.all().rekey('id', 'name')
         )
 
         self.assertEqual(
             { 1 : 'dpepper', 2 : 'josh' },
-            Person.query.rekey('id', 'name')
+            Student.query.rekey('id', 'name')
         )
 
 
     def test_rekey_lightening(self):
         self.assertEqual(
             { 1 : 'dpepper', 2 : 'josh' },
-            Person.all.rekey('id', 'name')
+            Student.all.rekey('id', 'name')
         )
 
         self.assertEqual(
             { 1 : 'dpepper' },
-            Person.where(name='dpepper').rekey('id', 'name')
+            Student.where(name='dpepper').rekey('id', 'name')
         )
 
         self.assertEqual(
             { 1 : 'dpepper' },
-            Person.where(name=['dpepper', 'josh']).limit(1).rekey('id', 'name')
+            Student.where(name=['dpepper', 'josh']).limit(1).rekey('id', 'name')
         )
 
 
