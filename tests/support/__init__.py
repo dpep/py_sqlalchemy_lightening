@@ -19,6 +19,7 @@ __all__ = [
     'TestBase',
 ]
 
+
 @as_declarative()
 class BaseModel(LighteningBase):
     id = Column(Integer, primary_key=True)

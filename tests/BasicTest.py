@@ -2,6 +2,7 @@
 
 import os
 import sys
+import unittest
 
 from sqlalchemy.orm.query import Query
 from sqlalchemy import Column, String
