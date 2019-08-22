@@ -3,6 +3,7 @@ import logging
 from sqlalchemy import event
 from sqlalchemy.exc import NoForeignKeysError
 from sqlalchemy.orm import foreign, RelationshipProperty
+from sqlalchemy.orm.base import instance_dict
 
 from .result_list import ResultList
 
@@ -48,13 +49,30 @@ class RelationshipWrapper(RelationshipProperty):
                     # retry mapping the relationship
                     rel = super(RelationshipWrapper, self).do_init()
 
-                    # set foreign key (XXX_id) during relationship update
+                    '''
+                    When a collection is updated, set the associated foreign key,
+                      eg. Pet.food sets Pet.food_id accordingly
+                    '''
                     @event.listens_for(getattr(class_, self.key), "set")
                     def on_set(target, value, oldvalue, initiator):
                         if value:
                             setattr(target, foreign_key, value.id)
                         else:
                             setattr(target, foreign_key, None)
+
+
+                    '''
+                    When a foreign key is updated, expunge the related collection
+                    so that it will be reloaded with the newly associated object.
+                    '''
+                    @event.listens_for(getattr(class_, foreign_key), "set")
+                    def on_set_foreign(target, value, oldvalue, initiator):
+                        dict_ = instance_dict(target)
+                        if self.key in dict_:
+                            foreign_obj = dict_[self.key]
+                            if foreign_obj is None or foreign_obj.id != value:
+                                # expunge cached collection
+                                del dict_[self.key]
 
                     return rel
 

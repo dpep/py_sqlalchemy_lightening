@@ -22,7 +22,6 @@ jp = Person(name='josh').save()
 carrots = Food(name='carrots').save()
 grass = Food(name='grass').save()
 apple = Food(name='apple').save()
-brownie.food = grass
 
 
 
@@ -59,32 +58,86 @@ class BasicTest(unittest.TestCase):
 
 
     def test_many_to_one(self):
+        brownie.food = grass
+
         self.assertEqual(
             grass,
             brownie.food
         )
 
-        # test update
-        brownie.food = carrots
-
-        # implicitly updated by event handler
+        # foreign key implicitly updated by event handler
         self.assertEqual(
-            carrots.id,
+            grass.id,
             brownie.food_id
         )
+
+        # test update
+        brownie.food = carrots
 
         self.assertEqual(
             carrots,
             brownie.food
         )
 
+        self.assertEqual(
+            carrots.id,
+            brownie.food_id
+        )
+
         # test delete
         brownie.food = None
+        self.assertIsNone(brownie.food)
         self.assertIsNone(brownie.food_id)
 
 
+    def test_many_to_one_foreign_key(self):
+        '''
+        Ensure that setting the foreign key column correctly resets
+        the relationship value, ie. changing Pet.food_id changes Pet.food
+        '''
+        hopper = Pet(name='hopper').save()
+        carrots = Food.where(name='carrots').one()
+        grass = Food.where(name='grass').one()
+        Pet.query.session.flush()
+
+        self.assertIsNone(hopper.food)
+        self.assertIsNone(hopper.food_id)
+
+        hopper.food_id = carrots.id
+
+        self.assertEqual(
+            carrots.id,
+            hopper.food_id
+        )
+
+        # implicitly updated by event handler
+        self.assertEqual(
+            carrots,
+            hopper.food
+        )
+
+        hopper.food_id = grass.id
+
+        self.assertEqual(
+            grass.id,
+            hopper.food_id
+        )
+
+        self.assertEqual(
+            grass,
+            hopper.food
+        )
+
+        hopper.food_id = None
+        self.assertIsNone(hopper.food_id)
+        self.assertIsNone(hopper.food)
+
+
     def test_secondary_many_to_one(self):
-        '''key name may differ from foreign table name'''
+        '''
+        key name may differ from foreign table name,
+          eg. Pet.treat_id maps to Food.id
+        '''
         self.assertIsNone(brownie.treat_id)
         self.assertIsNone(brownie.treat)
         self.assertIsNone(brownie.food)
@@ -92,21 +145,39 @@ class BasicTest(unittest.TestCase):
         brownie.treat = apple
 
         self.assertEqual(
+            apple,
+            brownie.treat
+        )
+        self.assertEqual(
             apple.id,
             brownie.treat_id
         )
 
-        self.assertEqual(
-            apple,
-            brownie.treat
-        )
+        # should not have changed
         self.assertIsNone(brownie.food)
+
+        brownie.food = grass
+        self.assertEqual(
+            grass.id,
+            brownie.food_id
+        )
+
+        # should not have changed
+        self.assertEqual(
+            apple.id,
+            brownie.treat_id
+        )
 
         # test delete
         brownie.treat = None
         self.assertIsNone(brownie.treat)
+        self.assertIsNone(brownie.treat_id)
 
-
+        # should not have changed
+        self.assertEqual(
+            grass.id,
+            brownie.food_id
+        )
 
 
 if __name__ == '__main__':

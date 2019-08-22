@@ -1,8 +1,9 @@
+import logging; logging.basicConfig(); logging.getLogger('sqlalchemy_lightening').setLevel(logging.DEBUG)
 import os
 import sys
 
 from sqlalchemy import create_engine
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy.orm import sessionmaker
 
