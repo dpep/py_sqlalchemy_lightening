@@ -4,28 +4,50 @@ import os
 import sys
 import unittest
 
-sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '.')) ] + sys.path
+from sqlalchemy import Column, String, Integer
 
-from models import Person, Pet, Food
+sys.path = [ os.path.abspath(os.path.dirname(__file__)) ] + sys.path
 
-
-Person.query.delete()
-Pet.query.delete()
-Food.query.delete()
-
-dp = Person(name='dpepper').save()
-brownie = Pet(name='brownie')
-dp.pets.append(brownie)
-
-jp = Person(name='josh').save()
-
-carrots = Food(name='carrots').save()
-grass = Food(name='grass').save()
-apple = Food(name='apple').save()
+from support import BaseModel, TestBase
+from sqlalchemy_lightening import relationship
 
 
+class Human(BaseModel):
+    name = Column(String, nullable=False)
+    pets = relationship('Pet')
 
-class BasicTest(unittest.TestCase):
+
+class Pet(BaseModel):
+    name = Column(String, nullable=False)
+    human_id = Column(Integer, index=True)
+
+    food_id = Column(Integer)
+    food = relationship('Food')
+
+    treat_id = Column(Integer)
+    treat = relationship('Food')
+
+
+class Food(BaseModel):
+    name = Column(String, unique=True)
+
+
+
+class BasicTest(TestBase):
+    def seed(self):
+        global dp, brownie, jp, carrots, grass, apple
+
+        dp = Human(name='dpepper').save()
+        brownie = Pet(name='brownie').save()
+        dp.pets.append(brownie)
+
+        jp = Human(name='josh').save()
+
+        carrots = Food(name='carrots').save()
+        grass = Food(name='grass').save()
+        apple = Food(name='apple').save()
+
+
     def test_upgrade(self):
         # was implicitly upgraded to Rekeyable and Pluckable
         self.assertTrue(hasattr(dp.pets, 'rekey'))
@@ -43,7 +65,7 @@ class BasicTest(unittest.TestCase):
     def test_one_to_many(self):
         self.assertEqual(
             [ dp.id ],
-            dp.pets.pluck('person_id')
+            dp.pets.pluck('human_id')
         )
 
         self.assertEqual(

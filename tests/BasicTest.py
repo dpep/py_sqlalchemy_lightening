@@ -2,21 +2,27 @@
 
 import os
 import sys
-import unittest
 
 from sqlalchemy.orm.query import Query
+from sqlalchemy import Column, String
 
-sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '.')) ] + sys.path
+sys.path = [ os.path.abspath(os.path.dirname(__file__)) ] + sys.path
 
-from models import Person
-
-
-Person.query.delete()
-dp = Person(name='dpepper').save()
-jp = Person(name='josh').save()
+from support import BaseModel, TestBase
 
 
-class BasicTest(unittest.TestCase):
+class Person(BaseModel):
+    name = Column(String)
+
+
+
+class BasicTest(TestBase):
+    def seed(self):
+        global dp, jp
+        dp = Person(name='dpepper').save()
+        jp = Person(name='josh').save()
+
+
     def test_properties(self):
         self.assertEqual(
             'person',

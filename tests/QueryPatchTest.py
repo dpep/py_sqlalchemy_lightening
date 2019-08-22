@@ -8,22 +8,17 @@ from sqlalchemy import Column, String
 
 sys.path = [ os.path.abspath(os.path.dirname(__file__)) ] + sys.path
 
-from models import BaseModel
+from support import BaseModel, TestBase
 
 
 class Student(BaseModel):
     name = Column(String)
 
 
-class QueryPatchTest(unittest.TestCase):
-    def setUp(self):
-        Student.__table__.create()
+class QueryPatchTest(TestBase):
+    def seed(self):
         Student(name='dpepper').save()
         Student(name='josh').save()
-
-
-    def tearDown(self):
-        Student.__table__.drop()
 
 
     def test_pluck(self):
