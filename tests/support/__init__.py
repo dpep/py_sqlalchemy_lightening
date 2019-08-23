@@ -24,10 +24,10 @@ class BaseModel(LighteningBase):
     id = Column(Integer, primary_key=True)
 
 
-    # def __str__(self):
-    #     if hasattr(self, 'name'):
-    #         return "%s(%s): %s" % (self.__class__.__name__, self.id, self.name)
-    #     return super().__str__()
+    def __str__(self):
+        if hasattr(self, 'name'):
+            return "%s(%s): %s" % (self.__class__.__name__, self.id, self.name)
+        return super().__str__()
 
 
 class TestBase(unittest.TestCase):
@@ -46,14 +46,17 @@ class TestBase(unittest.TestCase):
 
 engine = create_engine('sqlite:///:memory:')
 BaseModel.metadata.bind = engine
+Session = sessionmaker(
+    bind=engine,
+    autocommit=True,
+)
 
 def init_db():
-    session = sessionmaker(bind=engine)()
-
     BaseModel.metadata.drop_all()
     BaseModel.metadata.create_all()
 
-    LighteningBase.query_class = session.query
+    # create new session
+    LighteningBase.query_class = Session().query
 
 
 init_db()
