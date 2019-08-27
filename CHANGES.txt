@@ -1,3 +1,8 @@
+v0.3.4, 2019-08-27
+    5e4374b better test setup
+    8e8b175 refactor tests for better isolation
+    36cf805 isolate test better
+    350ac28 fix relationship update bug, add more test coverage
 v0.3.3, 2019-07-26
     f393eeb add columns accessor
     2914a0a relationship should use key name not foreign table name
