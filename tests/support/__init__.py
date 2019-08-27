@@ -32,11 +32,20 @@ class BaseModel(LighteningBase):
 
 class TestBase(unittest.TestCase):
     def setUp(self):
-        init_db()
-        self.seed()
+        # before each test: reset db, create new session, seed db
+
+        BaseModel.metadata.drop_all()
+        BaseModel.metadata.create_all()
+        self.session = Session()
+        LighteningBase.query_class = self.session.query
+
+        with self.session.begin():
+            # seed within transaction to force commit at end
+            self.seed()
 
 
     def tearDown(self):
+        # after each test: clear db
         BaseModel.metadata.drop_all()
 
 
@@ -50,13 +59,8 @@ Session = sessionmaker(
     bind=engine,
     autocommit=True,
 )
+session = Session()
 
-def init_db():
-    BaseModel.metadata.drop_all()
-    BaseModel.metadata.create_all()
-
-    # create new session
-    LighteningBase.query_class = Session().query
-
-
-init_db()
+# wire things up in case of manual testing
+LighteningBase.query_class = session.query
+BaseModel.metadata.create_all()
