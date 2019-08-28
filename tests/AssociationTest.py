@@ -5,6 +5,7 @@ import sys
 import unittest
 
 from sqlalchemy import *
+from sqlalchemy.orm.interfaces import MANYTOMANY
 
 sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '.')) ] + sys.path
 
@@ -17,7 +18,7 @@ init_assocs(BaseModel)
 class Company(BaseModel):
     name = Column(String)
     employees = association('Employee')
-    ceo = association('Employee', uselist=False)
+    ceo = association('Employee', uselist=False, single_parent=True, cascade='all, delete-orphan')
     mvp = association('Employee', type='favorite', uselist=False)
 
 
@@ -94,6 +95,17 @@ class AssociationTest(TestBase):
         self.assertEqual(0, Association.count)
 
 
+    def test_cascade(self):
+        self.assertIn('delete-orphan', Company.ceo.property.cascade)
+
+        ww.ceo = jarah
+        self.assertEqual(3, Employee.count)
+
+        # assoc delete should cascade and also delete Employee
+        ww.ceo = None
+        self.assertEqual(2, Employee.count)
+
+
     def test_type(self):
         ww.employees << dp
         self.assertEqual('employees', Association.all[-1].assoc_type)
@@ -106,12 +118,12 @@ class AssociationTest(TestBase):
 
 
     def test_property(self):
+        self.assertEqual(MANYTOMANY, Company.employees.property.direction)
         self.assertTrue(Company.employees.property.uselist)
+
+        self.assertEqual(MANYTOMANY, Company.ceo.property.direction)
         self.assertFalse(Company.ceo.property.uselist)
 
-
-
-# TODO: test delete cascades
 
 
 if __name__ == '__main__':

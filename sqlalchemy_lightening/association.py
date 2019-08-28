@@ -65,7 +65,6 @@ def association(to_class, **kwargs):
 class AssociationProperty(RelationshipProperty):
     def __init__(self, to_class, **kwargs):
         self.assoc_type = kwargs.pop('type', None)
-        self.assoc_cascade = kwargs.pop('cascade', False)
 
         super(AssociationProperty, self).__init__(
             to_class,
@@ -111,16 +110,17 @@ class AssociationProperty(RelationshipProperty):
         field = getattr(from_class, self.key)
 
         if self.uselist == False:
-            @event.listens_for(field, "set")
+            @event.listens_for(field, 'set')
             def on_set(target, value, oldvalue, initiator):
                 if oldvalue:
                     Association.delete(self.assoc_type, target, oldvalue)
 
+                    if 'delete-orphan' in self.cascade:
+                        oldvalue.delete()
+
                 if value:
                     Association.add(self.assoc_type, target, value)
         else:
-            self.uselist = True  # default in case of None
-
             @event.listens_for(field, 'append')
             def on_append(target, value, initiator):
                 # check/warn for null target.id or value.id ??
@@ -130,12 +130,13 @@ class AssociationProperty(RelationshipProperty):
             def on_remove(target, value, initiator):
                 Association.delete(self.assoc_type, target, value)
 
-                if self.assoc_cascade is True:
+                if 'delete-orphan' in self.cascade:
                     value.delete()
 
 
         # https://docs.sqlalchemy.org/en/13/orm/events.html#sqlalchemy.orm.events.AttributeEvents.dispose_collection
         # TODO: handle dispose_collection / init_collection events, eg. user.friends = [<new list>] ?
+        # TODO: cascade 'delete'
 
         return super(AssociationProperty, self).do_init()
 
