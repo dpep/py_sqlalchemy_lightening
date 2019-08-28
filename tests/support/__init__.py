@@ -2,6 +2,9 @@ import os
 import sys
 import unittest
 
+import logging
+logging.basicConfig()
+
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer
 from sqlalchemy.ext.declarative import as_declarative
@@ -14,7 +17,6 @@ from sqlalchemy_lightening import LighteningBase
 
 __all__ = [
     'BaseModel',
-    'init_db',
     'TestBase',
 ]
 
