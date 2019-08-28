@@ -1,3 +1,9 @@
+v0.4.0, 2019-08-28
+    e1e9e34 fix python27 compatibility bug
+    cf878b3 add delete-orphan cascade and direction test
+    944b037 add direction test
+    d7cf1d3 make assoc_type optional.  cleanup.  better logging
+    756711c prototype associations
 v0.3.4, 2019-08-27
     5e4374b better test setup
     8e8b175 refactor tests for better isolation
