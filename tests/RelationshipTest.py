@@ -5,6 +5,7 @@ import sys
 import unittest
 
 from sqlalchemy import Column, String, Integer
+from sqlalchemy.orm.interfaces import ONETOMANY, MANYTOONE
 
 sys.path = [ os.path.abspath(os.path.dirname(__file__)) ] + sys.path
 
@@ -64,6 +65,11 @@ class BasicTest(TestBase):
 
     def test_one_to_many(self):
         self.assertEqual(
+            ONETOMANY,
+            Human.pets.property.direction
+        )
+
+        self.assertEqual(
             [ dp.id ],
             dp.pets.pluck('human_id')
         )
@@ -80,6 +86,12 @@ class BasicTest(TestBase):
 
 
     def test_many_to_one(self):
+        # sqlalchemy gets this wrong without foreign keys
+        # self.assertEqual(
+        #     MANYTOONE,
+        #     Pet.food.property.direction
+        # )
+
         brownie.food = grass
 
         self.assertEqual(
