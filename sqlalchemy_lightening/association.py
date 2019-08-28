@@ -70,7 +70,7 @@ class AssociationProperty(RelationshipProperty):
             to_class,
             viewonly=True,
             primaryjoin=lambda: None,  # stub for now
-            **kwargs,
+            **kwargs
         )
 
 
