@@ -31,12 +31,10 @@ class RelationshipWrapper(RelationshipProperty):
                 # check for many-to-one relationship
                 foreign_key = self.key + '_id'
                 if hasattr(class_, foreign_key):
-                    id_col = getattr(class_, foreign_key)
-                    foreign_col = getattr(foreign_class, 'id')
+                    foreign_col = getattr(class_, foreign_key)
+                    id_col = getattr(foreign_class, 'id')
 
                     self.primaryjoin = id_col == foreign(foreign_col)
-                    self.uselist = False
-                    self.viewonly = True  # custom update logic below
 
                     logger.info(
                         'implicit many-to-one relationship: %s.%s: %s' % (
@@ -53,7 +51,7 @@ class RelationshipWrapper(RelationshipProperty):
                     When a collection is updated, set the associated foreign key,
                       eg. Pet.food sets Pet.food_id accordingly
                     '''
-                    @event.listens_for(getattr(class_, self.key), "set")
+                    @event.listens_for(getattr(class_, self.key), 'set')
                     def on_set(target, value, oldvalue, initiator):
                         if value:
                             setattr(target, foreign_key, value.id)
@@ -65,7 +63,7 @@ class RelationshipWrapper(RelationshipProperty):
                     When a foreign key is updated, expunge the related collection
                     so that it will be reloaded with the newly associated object.
                     '''
-                    @event.listens_for(getattr(class_, foreign_key), "set")
+                    @event.listens_for(getattr(class_, foreign_key), 'set')
                     def on_set_foreign(target, value, oldvalue, initiator):
                         dict_ = instance_dict(target)
                         if self.key in dict_:

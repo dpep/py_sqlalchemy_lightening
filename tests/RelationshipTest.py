@@ -68,6 +68,7 @@ class BasicTest(TestBase):
             ONETOMANY,
             Human.pets.property.direction
         )
+        self.assertTrue(Human.pets.property.uselist)
 
         self.assertEqual(
             [ dp.id ],
@@ -86,11 +87,11 @@ class BasicTest(TestBase):
 
 
     def test_many_to_one(self):
-        # sqlalchemy gets this wrong without foreign keys
-        # self.assertEqual(
-        #     MANYTOONE,
-        #     Pet.food.property.direction
-        # )
+        self.assertEqual(
+            MANYTOONE,
+            Pet.food.property.direction
+        )
+        self.assertFalse(Pet.food.property.uselist)
 
         brownie.food = grass
 
