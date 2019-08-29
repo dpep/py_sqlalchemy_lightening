@@ -1,3 +1,5 @@
+v0.4.1, 2019-08-28
+    ea735ec fix manytoone bug, which simplifies downstream
 v0.4.0, 2019-08-28
     e1e9e34 fix python27 compatibility bug
     cf878b3 add delete-orphan cascade and direction test
