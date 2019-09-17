@@ -26,7 +26,7 @@ class BaseModel(LighteningBase):
     id = Column(Integer, primary_key=True)
 
 
-    def __str__(self):
+    def __repr__(self):
         if hasattr(self, 'name'):
             return "%s(%s): %s" % (self.__class__.__name__, self.id, self.name)
         return super().__str__()
