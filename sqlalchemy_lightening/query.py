@@ -16,15 +16,15 @@ Query.all = lambda self: ResultList(self.__sa_all())
 
 def where(self, *args, **kwargs):
     query = self
-    columns = self._entities[0].entity_zero.columns
+    entity = self._entities[0].entity_zero.entity
 
     for field, value in kwargs.items():
-        column = columns[field]
+        attr = getattr(entity, field)
 
         if isinstance(value, (list, tuple, set)):
-          query = query.filter(column.in_(value))
+          query = query.filter(attr.in_(value))
         else:
-          query = query.filter(column == value)
+          query = query.filter(attr == value)
 
     if len(args) > 0:
         query = query.filter(*args)
