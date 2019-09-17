@@ -128,20 +128,7 @@ class LighteningBase(object):
       Person.where(name='dpepper')
       Person.where(name=['dpepper', 'josh'])
     '''
-    query = cls.query
-
-    for field, value in kwargs.items():
-        column = getattr(cls, field)
-
-        if isinstance(value, (list, tuple, set)):
-          query = query.filter(column.in_(value))
-        else:
-          query = query.filter(column == value)
-
-    if len(args) > 0:
-      query = query.filter(*args)
-
-    return query
+    return cls.query.where(*args, **kwargs)
 
 
   def save(self):

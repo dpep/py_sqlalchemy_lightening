@@ -4,7 +4,8 @@ import os
 import sys
 import unittest
 
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Float
+from sqlalchemy.orm.query import Query
 
 sys.path = [ os.path.abspath(os.path.dirname(__file__)) ] + sys.path
 
@@ -13,12 +14,21 @@ from support import BaseModel, TestBase
 
 class Student(BaseModel):
     name = Column(String)
+    gpa = Column(Float)
 
 
 class QueryPatchTest(TestBase):
     def seed(self):
-        Student(name='dpepper').save()
-        Student(name='josh').save()
+        Student(name='dpepper', gpa=4.0).save()
+        Student(name='josh', gpa=3.8).save()
+
+
+    def test_where(self):
+        self.assertIsInstance(Student.where(), Query)
+        self.assertIsInstance(Student.where().where(), Query)
+
+        self.assertIsInstance(Student.query, Query)
+        self.assertIsInstance(Student.query.where(), Query)
 
 
     def test_pluck(self):
