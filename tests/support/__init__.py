@@ -29,7 +29,7 @@ class BaseModel(LighteningBase):
     def __repr__(self):
         if hasattr(self, 'name'):
             return "%s(%s): %s" % (self.__class__.__name__, self.id, self.name)
-        return super().__str__()
+        return super().__repr__()
 
 
 class TestBase(unittest.TestCase):
