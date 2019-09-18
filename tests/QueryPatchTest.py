@@ -19,7 +19,8 @@ class Student(BaseModel):
 
 class QueryPatchTest(TestBase):
     def seed(self):
-        Student(name='dpepper', gpa=4.0).save()
+        global dpepper
+        dpepper = Student(name='dpepper', gpa=4.0).save()
         Student(name='josh', gpa=3.8).save()
 
 
@@ -94,6 +95,11 @@ class QueryPatchTest(TestBase):
             Student.query.rekey('id', 'name')
         )
 
+        self.assertEqual(
+            { 1 : dpepper },
+            Student.where(id=1).rekey('id')
+        )
+
 
     def test_rekey_lightening(self):
         self.assertEqual(
@@ -107,8 +113,8 @@ class QueryPatchTest(TestBase):
         )
 
         self.assertEqual(
-            { 1 : 'dpepper' },
-            Student.where(name=['dpepper', 'josh']).limit(1).rekey('id', 'name')
+            { 1 : dpepper },
+            Student.where(name=['dpepper', 'josh']).limit(1).rekey('id')
         )
 
 
