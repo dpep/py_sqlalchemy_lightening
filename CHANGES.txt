@@ -1,3 +1,5 @@
+v0.4.4, 2019-09-18
+    66c8047 handle rekey with no handle
 v0.4.3, 2019-09-17
     772a7f5 patch Query.where() bug for hybrid properties
 v0.4.2, 2019-09-16
