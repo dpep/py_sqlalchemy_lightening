@@ -215,5 +215,39 @@ class BasicTest(TestBase):
         )
 
 
+    def test_many_to_one_init(self):
+        '''
+        ensure relationship works with initializer as expected
+        '''
+        steak = Food(name='steak').save()
+        self.session.flush()
+
+        shelby = Pet(
+            name='Shelby',
+            food=steak,
+        )
+
+        self.assertIsNotNone(steak.id)
+
+        self.assertEqual(
+            steak,
+            shelby.food
+        )
+
+        self.assertEqual(
+            steak.id,
+            shelby.food_id
+        )
+
+        # TODO: fix bug
+        # # with foreign key id
+        # hopper = Pet(food_id=carrots.id)
+
+        # self.assertEqual(
+        #     carrots,
+        #     hopper.food
+        # )
+
+
 if __name__ == '__main__':
     unittest.main()
