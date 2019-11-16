@@ -153,8 +153,7 @@ class AssociationBase(LighteningBase):
     to_type = Column(String(40))
 
     __table_args__ = (
-        Index('idx_join', 'assoc_type', 'from_id', 'from_type'),
-        # Index('idx_load', 'assoc_type', 'from_id', 'from_type', 'to_id', 'to_type'),
+        Index('idx_sal_assoc_join', 'assoc_type', 'from_type', 'from_id'),
     )
 
 
