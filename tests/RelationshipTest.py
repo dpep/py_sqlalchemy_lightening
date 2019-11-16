@@ -39,10 +39,9 @@ class BasicTest(TestBase):
         global dp, brownie, jp, carrots, grass, apple
 
         dp = Human(name='dpepper').save()
-        brownie = Pet(name='brownie').save()
-        dp.pets.append(brownie)
-
         jp = Human(name='josh').save()
+
+        brownie = Pet(name='brownie').save()
 
         carrots = Food(name='carrots').save()
         grass = Food(name='grass').save()
@@ -69,6 +68,9 @@ class BasicTest(TestBase):
             Human.pets.property.direction
         )
         self.assertTrue(Human.pets.property.uselist)
+
+        dp.pets << brownie
+        self.session.flush()
 
         self.assertEqual(
             [ dp.id ],
@@ -131,9 +133,7 @@ class BasicTest(TestBase):
         the relationship value, ie. changing Pet.food_id changes Pet.food
         '''
         hopper = Pet(name='hopper').save()
-        carrots = Food.where(name='carrots').one()
-        grass = Food.where(name='grass').one()
-        Pet.query.session.flush()
+        self.session.flush()
 
         self.assertIsNone(hopper.food)
         self.assertIsNone(hopper.food_id)
