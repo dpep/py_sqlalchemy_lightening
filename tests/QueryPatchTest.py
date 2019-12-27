@@ -80,7 +80,7 @@ class QueryPatchTest(TestBase):
 
         self.assertEqual(
             ['dpepper', 'josh'],
-            Student.get(1, 2).pluck('name')
+            Student.get([ 1, 2 ]).pluck('name')
         )
 
 

@@ -8,8 +8,8 @@ __all__ = [
 ]
 
 
-from collections import Iterable
 from classproperties import classproperty
+from collections import KeysView, ValuesView
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.exc import NoResultFound
 from stringcase import snakecase
@@ -78,44 +78,25 @@ class LighteningBase(object):
 
 
   @classmethod
-  def get(cls, *ids):
+  def get(cls, id_or_ids):
     """
-    Get a record or records based on their ids
+    Get a record or records based on it's id
       eg.  Person.get(1)
-           Person.get(1, 2)
            Person.get([1, 2])
     """
     assert 1 == len(cls.__table__.primary_key), "compound primary keys not yet supported"
     id_column = list(cls.__table__.primary_key)[0]
 
-    if len(ids) == 0:
-      raise ValueError("id or ids required")
-
-    if None in ids:
-      raise TypeError("None is an invalid id")
-
-    # eg. get([1, 2, 3])
-    ids_unpacked = False
-    if 1 == len(ids) and isinstance(ids[0], (list, tuple, set)):
-      ids = ids[0]
-      ids_unpacked = True
-
     # type cast
-    ids = list(map(id_column.type.python_type, ids))
+    type_cast = id_column.type.python_type
 
-    if 1 == len(ids):
-      # use standard SQLAlchemy
-      res = cls.query.get(ids[0])
-
-      if ids_unpacked:
-        # repack ids to match input format
-        res = ResultList([ res ])
-    else:
+    if isinstance(id_or_ids, (list, set, KeysView, ValuesView)):
+      # eg. get([1, 2, 3])
+      ids = list(map(type_cast, id_or_ids))
       res = cls.where(**{ id_column.name : ids }).all()
-      if len(ids) != len(res):
-        raise ValueError(
-          "expected %d values but only got %d" % (len(ids), len(res))
-        )
+    else:
+      # use standard SQLAlchemy
+      res = cls.query.get(type_cast(id_or_ids))
 
     return res
 

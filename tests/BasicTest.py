@@ -59,11 +59,8 @@ class BasicTest(TestBase):
             Person.get(u'1')
         )
 
-        self.assertEqual(
-            [ dp, jp ],
-            Person.get(1, 2)
-        )
 
+    def test_multiget(self):
         self.assertEqual(
             [ dp ],
             Person.get([ 1 ])
@@ -74,15 +71,32 @@ class BasicTest(TestBase):
             Person.get([ 1, 2 ])
         )
 
+        # supports type set
+        self.assertEqual(
+            [ dp, jp ],
+            Person.get(set([ 1, 2 ]))
+        )
+
+        # supports type dict_keys and dict_items
+        data = { 1 : 1, 2 : 2 }
+        self.assertEqual(
+            [ dp, jp ],
+            Person.get(data.keys())
+        )
+        self.assertEqual(
+            [ dp, jp ],
+            Person.get(data.values())
+        )
+
 
     def test_get_typecast(self):
         self.assertEqual(dp, Person.get(1))
         self.assertEqual(dp, Person.get('1'))
-        self.assertEqual([ dp, jp ], Person.get('1', '2'))
+        self.assertEqual([ dp, jp ], Person.get([ '1', '2' ]))
 
 
     def test_get_errors(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             # missing param
             Person.get()
 
@@ -93,10 +107,6 @@ class BasicTest(TestBase):
         with self.assertRaises(TypeError):
             # invalid key type
             Person.get([ 1, [ 2 ] ])
-
-        with self.assertRaises(ValueError):
-            # missing Person 3
-            Person.get(1, 2, 3)
 
 
     def test_where(self):

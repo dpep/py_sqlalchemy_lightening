@@ -13,8 +13,6 @@ Making SQLAlchemy great again
 Person.get(1)
 
 # load multiple by id
-Person.get(1, 2, 3)
-# or
 Person.get([1, 2, 3])
 
 # basic filter
