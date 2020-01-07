@@ -1,4 +1,5 @@
 import logging
+import sqlalchemy.orm
 
 from sqlalchemy import event
 from sqlalchemy.exc import NoForeignKeysError
@@ -110,3 +111,11 @@ def relationship(*args, **kwargs):
         kwargs['collection_class'] = ResultList
 
     return RelationshipWrapper(*args, **kwargs)
+
+
+def backref(*args, **kwargs):
+    # upgrade collection class
+    if kwargs.get('collection_class') is None:
+        kwargs['collection_class'] = ResultList
+
+    return sqlalchemy.orm.backref(*args, **kwargs)

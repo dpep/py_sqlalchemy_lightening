@@ -5,6 +5,7 @@ __version__ = '0.3.3'
 __all__ = [
   'LighteningBase',
   'relationship',
+  'backref',
 ]
 
 
@@ -17,7 +18,7 @@ from stringcase import snakecase
 import sqlalchemy_lightening.query
 
 from .result_list import ResultList
-from .relationship import relationship
+from .relationship import relationship, backref
 
 
 class LighteningBase(object):
