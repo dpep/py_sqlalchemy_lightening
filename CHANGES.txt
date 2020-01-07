@@ -1,3 +1,8 @@
+v0.5.0, 2020-01-07
+    a23febe expose upgraded backref collection class
+    95192d5 warning, BREAKING CHANGE: remove support for varargs get query, since it had the possibility of handling ambiguity incorrectly.  remove check for multiget that ensured all values were returned, thus allowing multiget to return fewer values than ids were passed in.  update tests and docs accordingly
+    193cf83 more test cover
+    a259c8f update index
 v0.4.4, 2019-09-18
     66c8047 handle rekey with no handle
 v0.4.3, 2019-09-17
