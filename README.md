@@ -4,11 +4,13 @@ Making SQLAlchemy great again
 
 
 #### Install
-```pip install sqlalchemy_ligthening```
+```bash
+pip install sqlalchemy_ligthening
+```
 
 
 #### Usage
-```
+```python
 # load by id
 Person.get(1)
 
@@ -32,8 +34,9 @@ Person.first
 Person.query
 ```
 
+
 ##  Example Setup
-```
+```python
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker

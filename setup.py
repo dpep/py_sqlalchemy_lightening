@@ -37,7 +37,7 @@ if __name__ == "__main__":
     setuptools.setup(
         name="sqlalchemy_lightening",
         version=__version__,
-        url="https://github.com/dpep/pysqlalchemy_lightening",
+        url="https://github.com/dpep/py_sqlalchemy_lightening",
         license="MIT",
         author="Daniel Pepper",
         description="making SQLAlchemy great again",
