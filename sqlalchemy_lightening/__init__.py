@@ -10,7 +10,7 @@ __all__ = [
 
 
 from classproperties import classproperty
-from collections import KeysView, ValuesView
+from collections.abc import KeysView, ValuesView
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm.exc import NoResultFound
 from stringcase import snakecase
