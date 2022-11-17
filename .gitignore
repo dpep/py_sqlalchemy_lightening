@@ -1,0 +1,8 @@
+# Packages
+.eggs
+*.egg
+*.egg-info
+*.pyc
+build
+dist
+sdist
