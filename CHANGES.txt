@@ -1,5 +1,7 @@
-v0.6.0, 2022-11-16
-    8b992cf Update imports so this library is compatible with Python 3.6+
+v0.6.0, 2022-11-17
+    8b992cf Python 3.6+ compatibility.  drop support for Python < 3.3
+    1daf2a3 github action (#2)
+    074fc15 version constraints
 v0.5.0, 2020-01-07
     a23febe expose upgraded backref collection class
     95192d5 warning, BREAKING CHANGE: remove support for varargs get query, since it had the possibility of handling ambiguity incorrectly.  remove check for multiget that ensured all values were returned, thus allowing multiget to return fewer values than ids were passed in.  update tests and docs accordingly
