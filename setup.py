@@ -51,11 +51,11 @@ if __name__ == "__main__":
         test_suite = 'tests',
 
         install_requires=[
-            "classproperties",
-            "pluckit",
-            "rekey",
-            "sqlalchemy",
-            "stringcase",
+            "classproperties>=0.2",
+            "pluckit>=0.6",
+            "rekey>=1.2",
+            "sqlalchemy>=1.2.18,<1.4",
+            "stringcase>=1.2",
         ],
 
         # https://pypi.python.org/pypi?%3Aaction=list_classifiers
