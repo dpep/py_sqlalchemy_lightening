@@ -12,7 +12,6 @@ __all__ = [
 from classproperties import classproperty
 from collections.abc import KeysView, ValuesView
 from sqlalchemy.orm import declared_attr
-from sqlalchemy.orm.exc import NoResultFound
 from stringcase import snakecase
 
 import sqlalchemy_lightening.query

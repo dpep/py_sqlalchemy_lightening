@@ -1,13 +1,11 @@
 import logging
 
 from sqlalchemy import event
-from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.orm import declared_attr, DeclarativeMeta
-from sqlalchemy.orm import Mapper, RelationshipProperty, foreign
+from sqlalchemy.orm import RelationshipProperty, foreign
 from sqlalchemy.sql.schema import Column, Index
-from sqlalchemy.types import *
+from sqlalchemy.types import Integer, String
 
-from . import LighteningBase, relationship
+from . import LighteningBase
 from .relationship import resolve_argument, set_join_arg
 from .result_list import ResultList
 
@@ -150,9 +148,7 @@ class AssociationProperty(RelationshipProperty):
                     value.delete()
 
 
-        # https://docs.sqlalchemy.org/en/13/orm/events.html#sqlalchemy.orm.events.AttributeEvents.dispose_collection
-        # TODO: handle dispose_collection / init_collection events, eg. user.friends = [<new list>] ?
-        # TODO: cascade 'delete'
+        # TODO: cascade 'delete' (deleting the parent should delete associations)
 
         return super(AssociationProperty, self).do_init()
 

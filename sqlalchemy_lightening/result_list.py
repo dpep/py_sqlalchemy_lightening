@@ -5,3 +5,4 @@ from rekey import Rekeyable
 class ResultList(list, Pluckable, Rekeyable):
     def __lshift__(self, other):
         self.append(other)
+        return self
