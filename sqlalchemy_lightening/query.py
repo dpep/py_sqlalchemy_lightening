@@ -16,7 +16,7 @@ Query.all = lambda self: ResultList(self.__sa_all())
 
 def where(self, *args, **kwargs):
     query = self
-    entity = self._entities[0].entity_zero.entity
+    entity = self.column_descriptions[0]['entity']
 
     for field, value in kwargs.items():
         attr = getattr(entity, field)

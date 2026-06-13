@@ -7,7 +7,7 @@ logging.basicConfig()
 
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer
-from sqlalchemy.ext.declarative import as_declarative
+from sqlalchemy.orm import as_declarative
 from sqlalchemy.orm import sessionmaker
 
 sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')) ] + sys.path
@@ -32,37 +32,34 @@ class BaseModel(LighteningBase):
         return super().__repr__()
 
 
+engine = create_engine('sqlite:///:memory:')
+Session = sessionmaker(bind=engine)
+
+
 class TestBase(unittest.TestCase):
     def setUp(self):
         # before each test: reset db, create new session, seed db
+        BaseModel.metadata.drop_all(engine)
+        BaseModel.metadata.create_all(engine)
 
-        BaseModel.metadata.drop_all()
-        BaseModel.metadata.create_all()
         self.session = Session()
         LighteningBase.query_class = self.session.query
 
-        with self.session.begin():
-            # seed within transaction to force commit at end
-            self.seed()
+        self.seed()
+        self.session.commit()
 
 
     def tearDown(self):
         # after each test: clear db
-        BaseModel.metadata.drop_all()
+        self.session.close()
+        BaseModel.metadata.drop_all(engine)
 
 
     def seed(self):
         pass
 
 
-engine = create_engine('sqlite:///:memory:')
-BaseModel.metadata.bind = engine
-Session = sessionmaker(
-    bind=engine,
-    autocommit=True,
-)
-session = Session()
-
 # wire things up in case of manual testing
+session = Session()
 LighteningBase.query_class = session.query
-BaseModel.metadata.create_all()
+BaseModel.metadata.create_all(engine)

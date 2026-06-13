@@ -1,8 +1,18 @@
 # Packages
-.eggs
 *.egg
 *.egg-info
-*.pyc
 build
 dist
+eggs
 sdist
+
+*.pyc
+__pycache__
+
+# Environments
+venv
+
+# Tooling
+.eggs
+.pytest_cache
+.tox

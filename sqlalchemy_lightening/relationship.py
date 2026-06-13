@@ -12,7 +12,37 @@ from .result_list import ResultList
 logger = logging.getLogger(__name__)
 
 
+def resolve_argument(prop):
+    '''resolve a relationship's target argument to a mapped class'''
+    arg = prop.argument
+
+    # unwrap a lambda, eg. relationship(lambda: Pet)
+    if callable(arg) and not isinstance(arg, type):
+        arg = arg()
+
+    # resolve a string name, eg. relationship('Pet')
+    if isinstance(arg, str):
+        arg = prop.parent.registry._class_registry[arg]
+
+    return arg
+
+
+def set_join_arg(prop, name, value):
+    '''
+    Inject a join argument (primaryjoin, secondary, secondaryjoin) into a
+    relationship after construction.
+
+    As of SQLAlchemy 2.0, join conditions are resolved from `_init_args`
+    during do_init, so assigning eg. `prop.primaryjoin` directly is discarded.
+    '''
+    getattr(prop._init_args, name).argument = value
+
+
 class RelationshipWrapper(RelationshipProperty):
+    # safe to reuse the superclass cache key; we only customize init-time
+    # join construction, not query compilation
+    inherit_cache = True
+
     def do_init(self):
         try:
             # see if it works as is
@@ -21,12 +51,19 @@ class RelationshipWrapper(RelationshipProperty):
             # nope, try to construct the relationship
 
             try:
-                # only the extreme base case is supported
-                if self.secondary or self.primaryjoin or self.secondaryjoin or self._user_defined_foreign_keys or (self.uselist is not None):
+                # only the extreme base case is supported.  user-provided join
+                # config lives in _init_args until configuration completes (the
+                # eventual self.primaryjoin etc. don't exist yet at this point).
+                init_args = self._init_args
+                if (init_args.secondary.argument is not None
+                        or init_args.primaryjoin.argument is not None
+                        or init_args.secondaryjoin.argument is not None
+                        or init_args.foreign_keys.argument is not None
+                        or self.uselist is not None):
                     raise NotImplementedError()
 
                 class_ = self.parent.class_
-                foreign_class = self.argument()
+                foreign_class = resolve_argument(self)
 
 
                 # check for many-to-one relationship
@@ -35,13 +72,14 @@ class RelationshipWrapper(RelationshipProperty):
                     foreign_col = getattr(class_, foreign_key)
                     id_col = getattr(foreign_class, 'id')
 
-                    self.primaryjoin = id_col == foreign(foreign_col)
+                    primaryjoin = id_col == foreign(foreign_col)
+                    set_join_arg(self, 'primaryjoin', primaryjoin)
 
                     logger.info(
                         'implicit many-to-one relationship: %s.%s: %s' % (
                             class_.__name__,
                             self.key,
-                            self.primaryjoin,
+                            primaryjoin,
                         )
                     )
 
@@ -86,13 +124,14 @@ class RelationshipWrapper(RelationshipProperty):
                         # do not use unless foreign column is indexed
                         raise NotImplementedError()
 
-                    self.primaryjoin = id_col == foreign(foreign_col)
+                    primaryjoin = id_col == foreign(foreign_col)
+                    set_join_arg(self, 'primaryjoin', primaryjoin)
 
                     logger.info(
                         'implicit one-to-many relationship: %s.%s: %s' % (
                             class_.__name__,
                             self.key,
-                            self.primaryjoin,
+                            primaryjoin,
                         )
                     )
 

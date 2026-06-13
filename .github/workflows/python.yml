@@ -1,35 +1,52 @@
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+name: Python
 
 on:
   push:
-    paths-ignore:
-      - '**.md'
+    branches: [ main ]
+    tags: '*'
   pull_request:
-    types: [ opened, edited, synchronize ]
+    types: [ opened, synchronize ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        python-version: ["3.10", "3.9", "3.7"]
+        python-version: [ '3.12', '3.13', '3.14' ]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+    - uses: actions/checkout@v4
+    - name: Python setup
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+        cache: pip
+    - name: install dependencies
+      run: pip install -e .[test]
+    - run: pytest
+
+
+  # build and publish on tags
+  publish:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/')  # tags pushed
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Python setup
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+        cache: pip
+    - name: build package
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install flake8
-        pip install .
-    - name: lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    - name: unit tests
-      run: |
-        python setup.py test
+        pip install build
+        python -m build  # build wheel and source tarball
+    - name: publish
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+
+permissions:
+  id-token: write
+  contents: read

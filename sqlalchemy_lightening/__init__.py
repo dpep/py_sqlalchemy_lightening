@@ -11,7 +11,7 @@ __all__ = [
 
 from classproperties import classproperty
 from collections.abc import KeysView, ValuesView
-from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import declared_attr
 from sqlalchemy.orm.exc import NoResultFound
 from stringcase import snakecase
 
@@ -97,7 +97,7 @@ class LighteningBase(object):
       res = cls.where(**{ id_column.name : ids }).all()
     else:
       # use standard SQLAlchemy
-      res = cls.query.get(type_cast(id_or_ids))
+      res = cls.query.session.get(cls, type_cast(id_or_ids))
 
     return res
 

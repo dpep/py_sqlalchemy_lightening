@@ -5,7 +5,7 @@ Making SQLAlchemy great again
 
 #### Install
 ```bash
-pip install sqlalchemy_ligthening
+pip install sqlalchemy_lightening
 ```
 
 
@@ -37,9 +37,8 @@ Person.query
 
 ##  Example Setup
 ```python
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy_lightening import LighteningBase
 
 
@@ -55,7 +54,6 @@ engine = create_engine('sqlite:///:memory:')
 session = sessionmaker(bind=engine)()
 
 Base.metadata.create_all(engine)
-Base.metadata.bind = engine
 
 # wire things up
 LighteningBase.query_class = session.query

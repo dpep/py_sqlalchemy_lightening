@@ -2,12 +2,13 @@ import logging
 
 from sqlalchemy import event
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.ext.declarative import declared_attr, DeclarativeMeta
+from sqlalchemy.orm import declared_attr, DeclarativeMeta
 from sqlalchemy.orm import Mapper, RelationshipProperty, foreign
 from sqlalchemy.sql.schema import Column, Index
 from sqlalchemy.types import *
 
 from . import LighteningBase, relationship
+from .relationship import resolve_argument, set_join_arg
 from .result_list import ResultList
 
 logger = logging.getLogger(__name__)
@@ -63,8 +64,18 @@ def association(to_class, **kwargs):
 
 
 class AssociationProperty(RelationshipProperty):
+    # safe to reuse the superclass cache key; we only customize init-time
+    # join construction, not query compilation
+    inherit_cache = True
+
     def __init__(self, to_class, **kwargs):
         self.assoc_type = kwargs.pop('type', None)
+
+        # the association manages its own persistence via events, so it tracks
+        # cascade intent itself rather than relying on the native relationship
+        # cascade (which viewonly relationships strip in SQLAlchemy 2.0).
+        cascade = kwargs.pop('cascade', None) or ''
+        self.assoc_cascade = { c.strip() for c in cascade.split(',') if c.strip() }
 
         super(AssociationProperty, self).__init__(
             to_class,
@@ -75,7 +86,7 @@ class AssociationProperty(RelationshipProperty):
 
 
     def do_init(self):
-        to_class = self.argument()
+        to_class = resolve_argument(self)
         from_class = self.parent.class_
 
         if self.assoc_type is None:
@@ -83,13 +94,16 @@ class AssociationProperty(RelationshipProperty):
             self.assoc_type = self.key
 
         # build join now that parent's class is known
-        self.primaryjoin = foreign(Association.assoc_type) == self.assoc_type
-        self.primaryjoin &= foreign(Association.from_id) == from_class.id
-        self.primaryjoin &= foreign(Association.from_type) == from_class.__name__
+        primaryjoin = foreign(Association.assoc_type) == self.assoc_type
+        primaryjoin &= foreign(Association.from_id) == from_class.id
+        primaryjoin &= foreign(Association.from_type) == from_class.__name__
+        set_join_arg(self, 'primaryjoin', primaryjoin)
 
-        self.secondary = Association.__table__
-        self.secondaryjoin = Association.to_id == foreign(to_class.id)
-        self.secondaryjoin &= Association.to_type == to_class.__name__
+        set_join_arg(self, 'secondary', Association.__table__)
+
+        secondaryjoin = Association.to_id == foreign(to_class.id)
+        secondaryjoin &= Association.to_type == to_class.__name__
+        set_join_arg(self, 'secondaryjoin', secondaryjoin)
 
 
         if self.assoc_type == self.key:
@@ -110,12 +124,14 @@ class AssociationProperty(RelationshipProperty):
         field = getattr(from_class, self.key)
 
         if self.uselist == False:
-            @event.listens_for(field, 'set')
+            # active_history loads the prior value so it can be unlinked;
+            # otherwise 2.0 passes a LoaderCallableStatus sentinel for oldvalue
+            @event.listens_for(field, 'set', active_history=True)
             def on_set(target, value, oldvalue, initiator):
                 if oldvalue:
                     Association.delete(self.assoc_type, target, oldvalue)
 
-                    if 'delete-orphan' in self.cascade:
+                    if 'delete-orphan' in self.assoc_cascade:
                         oldvalue.delete()
 
                 if value:
@@ -130,7 +146,7 @@ class AssociationProperty(RelationshipProperty):
             def on_remove(target, value, initiator):
                 Association.delete(self.assoc_type, target, value)
 
-                if 'delete-orphan' in self.cascade:
+                if 'delete-orphan' in self.assoc_cascade:
                     value.delete()
 
 

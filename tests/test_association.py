@@ -69,8 +69,8 @@ class AssociationTest(TestBase):
         self.assertEqual([ amol ], ww.employees)
         self.assertEqual(1, Association.count)
 
-        # deleting attribute simply forces reload
-        del ww.employees
+        # expiring the attribute forces a reload from the association table
+        self.session.expire(ww, [ 'employees' ])
         self.assertEqual([ amol ], ww.employees)
 
         # deleting list item should work as expected
@@ -96,7 +96,7 @@ class AssociationTest(TestBase):
 
 
     def test_cascade(self):
-        self.assertIn('delete-orphan', Company.ceo.property.cascade)
+        self.assertIn('delete-orphan', Company.ceo.property.assoc_cascade)
 
         ww.ceo = jarah
         self.assertEqual(3, Employee.count)
