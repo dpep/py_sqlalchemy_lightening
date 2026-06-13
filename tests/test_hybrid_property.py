@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 
-import os
-import sys
 import unittest
 
 from sqlalchemy import *
 from sqlalchemy.ext.hybrid import hybrid_property
 
-sys.path = [ os.path.abspath(os.path.dirname(__file__)) ] + sys.path
-
-from support import BaseModel, TestBase
+from tests.support import BaseModel, TestBase
 
 
 class Rectangle(BaseModel):

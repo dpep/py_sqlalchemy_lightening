@@ -1,5 +1,3 @@
-import os
-import sys
 import unittest
 
 import logging
@@ -9,8 +7,6 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer
 from sqlalchemy.orm import as_declarative
 from sqlalchemy.orm import sessionmaker
-
-sys.path = [ os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')) ] + sys.path
 
 from sqlalchemy_lightening import LighteningBase
 
