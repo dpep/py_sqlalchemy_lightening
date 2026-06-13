@@ -239,14 +239,13 @@ class BasicTest(TestBase):
             shelby.food_id
         )
 
-        # TODO: fix bug
-        # # with foreign key id
-        # hopper = Pet(food_id=carrots.id)
+        # with foreign key id
+        hopper = Pet(food_id=carrots.id)
 
-        # self.assertEqual(
-        #     carrots,
-        #     hopper.food
-        # )
+        self.assertEqual(
+            carrots,
+            hopper.food
+        )
 
 
 if __name__ == '__main__':

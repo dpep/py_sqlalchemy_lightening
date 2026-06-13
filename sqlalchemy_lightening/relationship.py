@@ -86,30 +86,55 @@ class RelationshipWrapper(RelationshipProperty):
                     # retry mapping the relationship
                     rel = super(RelationshipWrapper, self).do_init()
 
+                    # the relationship and its foreign key are kept in sync in
+                    # both directions; this guards against the resulting events
+                    # ping-ponging back and forth (which side drives wins)
+                    syncing = set()
+
                     '''
-                    When a collection is updated, set the associated foreign key,
-                      eg. Pet.food sets Pet.food_id accordingly
+                    When the related object is updated, set the foreign key,
+                      eg. Pet.food sets Pet.food_id accordingly.
                     '''
                     @event.listens_for(getattr(class_, self.key), 'set')
                     def on_set(target, value, oldvalue, initiator):
-                        if value:
-                            setattr(target, foreign_key, value.id)
-                        else:
-                            setattr(target, foreign_key, None)
+                        if id(target) in syncing:
+                            return
+
+                        syncing.add(id(target))
+                        try:
+                            setattr(target, foreign_key, value.id if value else None)
+                        finally:
+                            syncing.discard(id(target))
 
 
                     '''
-                    When a foreign key is updated, expunge the related collection
-                    so that it will be reloaded with the newly associated object.
+                    When the foreign key is updated, resync the related object,
+                      eg. Pet.food_id sets Pet.food accordingly.
+                    Setting it (rather than just expunging the cache) means it
+                    resolves even before the object is flushed, including via
+                    the initializer, eg. Pet(food_id=1).food
                     '''
                     @event.listens_for(getattr(class_, foreign_key), 'set')
                     def on_set_foreign(target, value, oldvalue, initiator):
+                        if id(target) in syncing:
+                            return
+
                         dict_ = instance_dict(target)
-                        if self.key in dict_:
-                            foreign_obj = dict_[self.key]
-                            if foreign_obj is None or foreign_obj.id != value:
-                                # expunge cached collection
-                                del dict_[self.key]
+                        foreign_obj = dict_.get(self.key)
+                        current_id = foreign_obj.id if foreign_obj is not None else None
+                        if current_id == value:
+                            # already consistent
+                            return
+
+                        syncing.add(id(target))
+                        try:
+                            setattr(
+                                target,
+                                self.key,
+                                foreign_class.get(value) if value is not None else None,
+                            )
+                        finally:
+                            syncing.discard(id(target))
 
                     return rel
 
