@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy import event
-from sqlalchemy.orm import RelationshipProperty, foreign
+from sqlalchemy.orm import RelationshipProperty, Session, foreign
 from sqlalchemy.sql.schema import Column, Index
 from sqlalchemy.types import Integer, String
 
@@ -28,6 +28,67 @@ class AssociationProxy(object):
         return repr(association_cls)
 
 Association = AssociationProxy()
+
+
+# deleting a parent cascades through the association table.  each association
+# registers a rule; a single session listener applies them all, draining a
+# worklist so cascades recurse (and run through the ORM, keeping the session's
+# identity map consistent).
+_cascade_rules = []  # (from_class, assoc_type, to_class, cascade_delete)
+_cascade_listener_installed = False
+
+
+def _install_cascade_listener():
+    global _cascade_listener_installed
+    if not _cascade_listener_installed:
+        event.listen(Session, 'before_flush', _cascade_deletes)
+        _cascade_listener_installed = True
+
+
+def _cascade_deletes(session, flush_context, instances):
+    worklist = list(session.deleted)
+    seen = set()
+
+    while worklist:
+        obj = worklist.pop()
+        if id(obj) in seen:
+            continue
+        seen.add(id(obj))
+
+        for from_class, assoc_type, to_class, cascade_delete in _cascade_rules:
+            if not isinstance(obj, from_class):
+                continue
+
+            for assoc in _associations_from(session, assoc_type, obj):
+                if cascade_delete:
+                    target = session.get(to_class, assoc.to_id)
+                    if target is not None and id(target) not in seen:
+                        session.delete(target)
+                        worklist.append(target)
+
+                session.delete(assoc)
+
+
+def _associations_from(session, assoc_type, obj):
+    '''association rows from `obj`, including ones still pending in the flush'''
+    cls = association_cls
+    from_type = obj.__class__.__name__
+
+    flushed = session.query(cls).filter(
+        cls.assoc_type == assoc_type,
+        cls.from_id == obj.id,
+        cls.from_type == from_type,
+    ).all()
+
+    pending = [
+        assoc for assoc in session.new
+        if isinstance(assoc, cls)
+        and assoc.assoc_type == assoc_type
+        and assoc.from_id == obj.id
+        and assoc.from_type == from_type
+    ]
+
+    return flushed + pending
 
 
 def init_assocs(base_cls, tablename=None):
@@ -148,7 +209,13 @@ class AssociationProperty(RelationshipProperty):
                     value.delete()
 
 
-        # TODO: cascade 'delete' (deleting the parent should delete associations)
+        # register the cascade rule for when a parent is deleted; with a
+        # delete cascade ('delete' or 'all'), also delete the associated objects
+        cascade_delete = bool(self.assoc_cascade & { 'delete', 'all' })
+        _cascade_rules.append(
+            (from_class, self.assoc_type, to_class, cascade_delete)
+        )
+        _install_cascade_listener()
 
         return super(AssociationProperty, self).do_init()
 

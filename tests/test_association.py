@@ -20,6 +20,11 @@ class Company(BaseModel):
 
 class Employee(BaseModel):
     name = Column(String)
+    laptop = association('Laptop', uselist=False, cascade='all, delete-orphan')
+
+
+class Laptop(BaseModel):
+    name = Column(String)
 
 
 class AssociationTest(TestBase):
@@ -100,6 +105,57 @@ class AssociationTest(TestBase):
         # assoc delete should cascade and also delete Employee
         ww.ceo = None
         self.assertEqual(2, Employee.count)
+
+
+    def test_delete_cleans_up_associations(self):
+        # deleting the parent removes its association rows
+        ww.employees << dp
+        ww.employees << amol
+        self.assertEqual(2, Association.count)
+
+        ww.delete()
+        self.session.flush()
+
+        self.assertEqual(0, Association.count)
+        # a plain association leaves the targets intact
+        self.assertEqual(3, Employee.count)
+
+
+    def test_delete_cascades_to_targets(self):
+        # with a delete cascade, deleting the parent also deletes the targets
+        ww.ceo = jarah
+        self.session.flush()
+        self.assertEqual(1, Association.count)
+        self.assertEqual(3, Employee.count)
+
+        ww.delete()
+        self.session.flush()
+
+        self.assertEqual(0, Association.count)
+        self.assertEqual(2, Employee.count)
+
+        # the cascaded target is removed from the session, not left stale
+        self.assertTrue(inspect(jarah).deleted)
+        self.assertNotIn(jarah, self.session)
+
+
+    def test_delete_cascade_recurses(self):
+        # cascade follows the chain: Company -> Employee -> Laptop
+        mbp = Laptop(name='mbp').save()
+        self.session.flush()
+
+        ww.ceo = jarah
+        jarah.laptop = mbp
+        self.session.flush()
+        self.assertEqual(2, Association.count)
+        self.assertEqual(1, Laptop.count)
+
+        ww.delete()
+        self.session.flush()
+
+        self.assertEqual(0, Association.count)
+        self.assertEqual(2, Employee.count)
+        self.assertEqual(0, Laptop.count)
 
 
     def test_type(self):
