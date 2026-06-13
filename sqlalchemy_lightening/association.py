@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy import event
-from sqlalchemy.orm import RelationshipProperty, Session, foreign
+from sqlalchemy.orm import RelationshipProperty, Session, foreign, object_session
 from sqlalchemy.sql.schema import Column, Index
 from sqlalchemy.types import Integer, String
 
@@ -238,6 +238,22 @@ class AssociationBase(LighteningBase):
 
     @classmethod
     def add(cls, assoc_type, from_, to):
+        # persist the linked objects so they have ids; this mirrors SQLAlchemy's
+        # save-update cascade, eg. ww.employees << Employee(name='new')
+        if from_.id is None or to.id is None:
+            session = object_session(from_) or object_session(to)
+            if session is None:
+                raise ValueError(
+                    'cannot associate objects outside of a session: %r, %r' % (
+                        from_, to,
+                    )
+                )
+
+            for obj in (from_, to):
+                if obj not in session:
+                    session.add(obj)
+            session.flush()
+
         return cls(
             assoc_type=assoc_type,
             from_id=from_.id,

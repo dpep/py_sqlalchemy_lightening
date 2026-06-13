@@ -141,11 +141,8 @@ class AssociationTest(TestBase):
 
     def test_delete_cascade_recurses(self):
         # cascade follows the chain: Company -> Employee -> Laptop
-        mbp = Laptop(name='mbp').save()
-        self.session.flush()
-
         ww.ceo = jarah
-        jarah.laptop = mbp
+        jarah.laptop = Laptop(name='mbp').save()
         self.session.flush()
         self.assertEqual(2, Association.count)
         self.assertEqual(1, Laptop.count)
@@ -156,6 +153,36 @@ class AssociationTest(TestBase):
         self.assertEqual(0, Association.count)
         self.assertEqual(2, Employee.count)
         self.assertEqual(0, Laptop.count)
+
+
+    def test_associate_before_target_has_id(self):
+        # a saved-but-unflushed target can be associated; its id resolves
+        mbp = Laptop(name='mbp').save()
+        self.assertIsNone(mbp.id)
+
+        jarah.laptop = mbp
+        self.session.flush()
+
+        self.assertEqual(mbp.id, Association.all[-1].to_id)
+        self.assertEqual(mbp, jarah.laptop)
+
+
+    def test_associate_persists_unsaved_object(self):
+        # associating an unsaved object persists it (save-update cascade)
+        ghost = Employee(name='ghost')
+        ww.employees << ghost
+        self.session.flush()
+
+        self.assertIsNotNone(ghost.id)
+        self.assertIn(ghost, ww.employees)
+        self.assertEqual(4, Employee.count)
+
+
+    def test_associate_without_session_raises(self):
+        # with no session to persist into, ids can't be resolved
+        startup = Company(name='startup')
+        with self.assertRaises(ValueError):
+            startup.employees << Employee(name='founder')
 
 
     def test_type(self):
