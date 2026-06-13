@@ -244,5 +244,19 @@ class BasicTest(TestBase):
         )
 
 
+    def test_many_to_one_unsaved_target(self):
+        '''
+        assigning an unsaved object persists it and resolves the foreign key
+        on flush (SQLAlchemy save-update cascade)
+        '''
+        spot = Pet(name='spot').save()
+        spot.food = Food(name='kibble')
+        self.session.flush()
+
+        self.assertIsNotNone(spot.food_id)
+        self.assertEqual(spot.food_id, spot.food.id)
+        self.assertEqual('kibble', spot.food.name)
+
+
 if __name__ == '__main__':
     unittest.main()
