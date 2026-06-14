@@ -1,3 +1,9 @@
+v0.7.0, 2026-06-14
+    SQLAlchemy 2.0 support
+    deleting a parent now cascades through its associations (recursively)
+    associating an unsaved object persists it (save-update cascade)
+    modernize packaging (pyproject.toml) and require Python >= 3.12
+    test against Python 3.12, 3.13, 3.14 in CI
 v0.6.0, 2022-11-17
     8b992cf Python 3.6+ compatibility.  drop support for Python < 3.3
     1daf2a3 github action (#2)
